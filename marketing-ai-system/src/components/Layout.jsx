@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import {
@@ -14,18 +14,48 @@ import {
   Zap,
   Target,
   Instagram,
-  Facebook
+  Facebook,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
 const Layout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Detectar se é mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const handleLogout = () => {
     logout();
     navigate('/');
+  };
+
+  const toggleSidebar = () => {
+    if (isMobile) {
+      setSidebarOpen(!sidebarOpen);
+    } else {
+      setSidebarCollapsed(!sidebarCollapsed);
+    }
+  };
+
+  const closeMobileSidebar = () => {
+    if (isMobile) {
+      setSidebarOpen(false);
+    }
   };
 
   const navigation = [
@@ -48,175 +78,186 @@ const Layout = ({ children }) => {
 
   const isActive = (href) => location.pathname === href;
 
+  const renderNavItem = (item, collapsed = false) => {
+    const Icon = item.icon;
+    return (
+      <Link
+        key={item.name}
+        to={item.href}
+        className={`
+          relative flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors group
+          ${collapsed ? 'nav-item-collapsed' : ''}
+          ${isActive(item.href)
+            ? 'bg-primary text-white'
+            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+          }
+        `}
+        onClick={closeMobileSidebar}
+      >
+        <Icon className={`w-5 h-5 nav-icon ${collapsed ? '' : 'mr-3'}`} />
+        <span className={`nav-text ${collapsed ? 'hidden' : ''}`}>{item.name}</span>
+        {collapsed && (
+          <div className="nav-tooltip">
+            {item.name}
+          </div>
+        )}
+      </Link>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Mobile sidebar overlay */}
-      {sidebarOpen && (
-        <div 
-          className="fixed inset-0 z-40 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        >
-          <div className="fixed inset-0 bg-gray-600 bg-opacity-75" />
-        </div>
-      )}
-
-      {/* Sidebar */}
-      <div className={`
-        fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0
-        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-      `}>
-        <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
+      {/* Mobile Header */}
+      {isMobile && (
+        <div className="mobile-header">
+          <button
+            onClick={toggleSidebar}
+            className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+          >
+            <Menu className="w-6 h-6" />
+          </button>
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <Bot className="w-5 h-5 text-white" />
             </div>
             <span className="text-lg font-semibold text-gray-900">Marketing AI</span>
           </div>
-          <button
-            onClick={() => setSidebarOpen(false)}
-            className="lg:hidden p-1 rounded-md text-gray-400 hover:text-gray-600"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="w-10" /> {/* Spacer */}
+        </div>
+      )}
+
+      {/* Mobile sidebar overlay */}
+      {isMobile && sidebarOpen && (
+        <div className="sidebar-overlay" onClick={closeMobileSidebar} />
+      )}
+
+      {/* Sidebar */}
+      <div className={`
+        ${isMobile 
+          ? `sidebar-mobile ${sidebarOpen ? 'open' : ''}`
+          : `sidebar-desktop ${sidebarCollapsed ? 'collapsed' : ''}`
+        }
+        bg-white shadow-lg
+      `}>
+        {/* Sidebar Header */}
+        <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200 relative">
+          <div className={`flex items-center space-x-3 ${sidebarCollapsed && !isMobile ? 'justify-center' : ''}`}>
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+              <Bot className="w-5 h-5 text-white" />
+            </div>
+            {(!sidebarCollapsed || isMobile) && (
+              <span className="text-lg font-semibold text-gray-900">Marketing AI</span>
+            )}
+          </div>
+          
+          {/* Mobile close button */}
+          {isMobile && (
+            <button
+              onClick={closeMobileSidebar}
+              className="p-1 rounded-md text-gray-400 hover:text-gray-600"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
+          
+          {/* Desktop toggle button */}
+          {!isMobile && (
+            <button
+              onClick={toggleSidebar}
+              className="sidebar-toggle"
+            >
+              {sidebarCollapsed ? (
+                <ChevronRight className="w-3 h-3" />
+              ) : (
+                <ChevronLeft className="w-3 h-3" />
+              )}
+            </button>
+          )}
         </div>
 
-        <nav className="mt-6 px-3">
+        {/* Navigation */}
+        <nav className="mt-6 px-3 overflow-y-auto">
+          {/* Main Navigation */}
           <div className="space-y-1">
-            {navigation.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  className={`
-                    flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors
-                    ${isActive(item.href)
-                      ? 'sidebar-active text-primary'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                    }
-                  `}
-                  onClick={() => setSidebarOpen(false)}
-                >
-                  <Icon className="w-5 h-5 mr-3" />
-                  {item.name}
-                </Link>
-              );
-            })}
+            {navigation.map((item) => renderNavItem(item, sidebarCollapsed && !isMobile))}
           </div>
 
-          {/* Seção de Plataformas */}
+          {/* Platforms Section */}
           <div className="mt-8">
-            <div className="px-3 mb-2">
-              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                Plataformas
-              </h3>
-            </div>
+            {(!sidebarCollapsed || isMobile) && (
+              <div className="px-3 mb-2">
+                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Plataformas
+                </h3>
+              </div>
+            )}
             <div className="space-y-1">
-              {platformNavigation.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    className={`
-                      flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors
-                      ${isActive(item.href)
-                        ? 'sidebar-active text-primary'
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                      }
-                    `}
-                    onClick={() => setSidebarOpen(false)}
-                  >
-                    <Icon className="w-5 h-5 mr-3" />
-                    {item.name}
-                  </Link>
-                );
-              })}
+              {platformNavigation.map((item) => renderNavItem(item, sidebarCollapsed && !isMobile))}
             </div>
           </div>
 
-          {/* Seção de Configurações */}
+          {/* Settings Section */}
           <div className="mt-8">
+            {(!sidebarCollapsed || isMobile) && (
+              <div className="px-3 mb-2">
+                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Configurações
+                </h3>
+              </div>
+            )}
             <div className="space-y-1">
-              {settingsNavigation.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    className={`
-                      flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors
-                      ${isActive(item.href)
-                        ? 'sidebar-active text-primary'
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                      }
-                    `}
-                    onClick={() => setSidebarOpen(false)}
-                  >
-                    <Icon className="w-5 h-5 mr-3" />
-                    {item.name}
-                  </Link>
-                );
-              })}
+              {settingsNavigation.map((item) => renderNavItem(item, sidebarCollapsed && !isMobile))}
             </div>
           </div>
         </nav>
 
-        {/* User info at bottom */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
-          <div className="flex items-center space-x-3 mb-3">
-            <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-              <User className="w-4 h-4 text-gray-600" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">
-                {user?.name || 'Usuário'}
-              </p>
-              <p className="text-xs text-gray-500 truncate">
-                {user?.email}
-              </p>
-            </div>
+        {/* User Section */}
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 bg-white">
+          <div className={`flex items-center ${sidebarCollapsed && !isMobile ? 'justify-center' : 'justify-between'}`}>
+            {(!sidebarCollapsed || isMobile) && (
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                  <User className="w-4 h-4 text-gray-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-900 truncate">
+                    {user?.name || 'Usuário Demo'}
+                  </p>
+                  <p className="text-xs text-gray-500 truncate">
+                    {user?.email || 'teste@teste.com'}
+                  </p>
+                </div>
+              </div>
+            )}
+            <button
+              onClick={handleLogout}
+              className={`
+                p-2 text-gray-400 hover:text-gray-600 rounded-md hover:bg-gray-100 transition-colors
+                ${sidebarCollapsed && !isMobile ? 'relative group' : ''}
+              `}
+            >
+              <LogOut className="w-4 h-4" />
+              {sidebarCollapsed && !isMobile && (
+                <div className="nav-tooltip">
+                  Sair
+                </div>
+              )}
+            </button>
           </div>
-          <button
-            onClick={handleLogout}
-            className="flex items-center w-full px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
-          >
-            <LogOut className="w-4 h-4 mr-3" />
-            Sair
-          </button>
         </div>
       </div>
 
-      {/* Main content */}
-      <div className="lg:ml-64 flex flex-col min-h-screen">
-        {/* Top bar */}
-        <header className="bg-white shadow-sm border-b border-gray-200">
-          <div className="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center">
-              <button
-                onClick={() => setSidebarOpen(true)}
-                className="lg:hidden p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100"
-              >
-                <Menu className="w-5 h-5" />
-              </button>
-              <h1 className="ml-2 text-xl font-semibold text-gray-900 lg:ml-0">
-                {[...navigation, ...platformNavigation, ...settingsNavigation].find(item => isActive(item.href))?.name || 'Dashboard'}
-              </h1>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2 text-sm text-gray-500">
-                <Zap className="w-4 h-4 text-green-500" />
-                <span>Sistema Online</span>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        {/* Page content */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8">
+      {/* Main Content */}
+      <div className={`
+        ${isMobile 
+          ? 'main-content-mobile'
+          : `main-content-desktop ${sidebarCollapsed ? 'expanded' : ''}`
+        }
+        min-h-screen transition-all duration-300 ease-in-out
+      `}>
+        <div className="fade-in">
           {children}
-        </main>
+        </div>
       </div>
     </div>
   );

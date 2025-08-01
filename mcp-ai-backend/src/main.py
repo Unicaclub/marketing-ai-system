@@ -10,20 +10,38 @@ from src.routes.user import user_bp
 from src.routes.mcp_agent import mcp_agent_bp
 from src.routes.sales_strategy import sales_strategy_bp
 
-app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static'))
-app.config['SECRET_KEY'] = 'asdf#FGSgvasgf$5$WGT'
+# Importar configurações
+sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+from config import config
 
-# Enable CORS for all routes
-CORS(app, origins="*")
+def create_app(config_name=None):
+    """Factory function para criar a aplicação Flask"""
+    if config_name is None:
+        config_name = os.environ.get('FLASK_ENV', 'development')
+    
+    app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static'))
+    
+    # Carregar configuração
+    config_obj = config[config_name]()
+    app.config.from_object(config_obj)
+    
+    # Configurar URI do banco de dados
+    app.config['SQLALCHEMY_DATABASE_URI'] = config_obj.SQLALCHEMY_DATABASE_URI
+    
+    # Enable CORS for all routes
+    CORS(app, origins="*")
+    
+    # Inicializar banco de dados
+    db.init_app(app)
+    
+    # Registrar blueprints
+    app.register_blueprint(user_bp, url_prefix='/api')
+    app.register_blueprint(mcp_agent_bp, url_prefix='/api/mcp')
+    app.register_blueprint(sales_strategy_bp, url_prefix='/api/sales')
+    
+    return app
 
-app.register_blueprint(user_bp, url_prefix='/api')
-app.register_blueprint(mcp_agent_bp, url_prefix='/api/mcp')
-app.register_blueprint(sales_strategy_bp, url_prefix='/api/sales')
-
-# uncomment if you need to use database
-app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(os.path.dirname(__file__), 'database', 'app.db')}"
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db.init_app(app)
+app = create_app()
 
 # Import all models to ensure they're created
 from src.models.campaign import Campaign, ProductDatabase, SalesInteraction
