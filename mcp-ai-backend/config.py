@@ -26,14 +26,16 @@ class Config:
     @property
     def SQLALCHEMY_DATABASE_URI(self):
         """Retorna a URI do banco de dados baseada no tipo configurado"""
+        # Prioriza DATABASE_URL do ambiente (ex: Railway)
+        db_url = os.environ.get('DATABASE_URL')
+        if db_url:
+            return db_url
         if self.DATABASE_TYPE == 'postgresql':
             password = quote_plus(self.POSTGRES_PASSWORD)
             return f"postgresql://{self.POSTGRES_USER}:{password}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
-        
         elif self.DATABASE_TYPE == 'mysql':
             password = quote_plus(self.MYSQL_PASSWORD)
             return f"mysql+pymysql://{self.MYSQL_USER}:{password}@{self.MYSQL_HOST}:{self.MYSQL_PORT}/{self.MYSQL_DB}"
-        
         else:  # SQLite (padrão)
             return f"sqlite:///{os.path.join(os.path.dirname(__file__), 'src', 'database', 'app.db')}"
 
@@ -43,6 +45,9 @@ class DevelopmentConfig(Config):
     
     @property
     def SQLALCHEMY_DATABASE_URI(self):
+        db_url = os.environ.get('DATABASE_URL')
+        if db_url:
+            return db_url
         password = quote_plus(self.POSTGRES_PASSWORD)
         return f"postgresql://{self.POSTGRES_USER}:{password}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
@@ -52,6 +57,9 @@ class ProductionConfig(Config):
     
     @property
     def SQLALCHEMY_DATABASE_URI(self):
+        db_url = os.environ.get('DATABASE_URL')
+        if db_url:
+            return db_url
         password = quote_plus(self.POSTGRES_PASSWORD)
         return f"postgresql://{self.POSTGRES_USER}:{password}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
