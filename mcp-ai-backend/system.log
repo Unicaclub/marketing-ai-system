@@ -1,0 +1,106 @@
+2025-08-02 00:35:13,128 INFO openai_agent: Recebida requisição para IA. Prompt: Criar nova campanha
+2025-08-02 00:35:13,128 ERROR openai_agent: Erro ao consultar OpenAI: 
+
+You tried to access openai.ChatCompletion, but this is no longer supported in openai>=1.0.0 - see the README at https://github.com/openai/openai-python for the API.
+
+You can run `openai migrate` to automatically upgrade your codebase to use the 1.0.0 interface. 
+
+Alternatively, you can pin your installation to the old version, e.g. `pip install openai==0.28`
+
+A detailed migration guide is available here: https://github.com/openai/openai-python/discussions/742
+
+2025-08-02 00:38:42,416 INFO openai_agent: Recebida requisição para IA. Prompt: Criar nova campanha
+2025-08-02 00:38:42,417 ERROR openai_agent: Erro ao consultar OpenAI: 
+
+You tried to access openai.ChatCompletion, but this is no longer supported in openai>=1.0.0 - see the README at https://github.com/openai/openai-python for the API.
+
+You can run `openai migrate` to automatically upgrade your codebase to use the 1.0.0 interface. 
+
+Alternatively, you can pin your installation to the old version, e.g. `pip install openai==0.28`
+
+A detailed migration guide is available here: https://github.com/openai/openai-python/discussions/742
+
+2025-08-02 00:45:02,063 INFO openai_agent: Recebida requisição para IA. Prompt: Criar nova campanha
+2025-08-02 00:45:05,159 INFO openai_agent: Resposta da OpenAI: Nome da campanha: "Juntos Pelo Bem"
+
+Slogan: "Unidos fazemos a diferença!"
+
+Objetivo: Promover a solidariedade e incentivar a ajuda ao próximo
+
+Descrição: A campanha "Juntos Pelo Bem" tem como objetivo unir esforços para ajudar aqueles que mais precisam. Seja através de doações de alimentos, roupas, produtos de higiene ou tempo voluntário, todos podem contribuir para fazer a diferença na vida de outras pessoas. Vamos nos unir e mostrar que juntos podemos fazer um mundo melhor!
+
+Ações propostas: 
+- Arrecadação de alimentos não perecíveis para doação a instituições de caridade
+- Campanha de doação de roupas e produtos de higiene para comunidades carentes
+- Voluntariado em organizações sociais
+- Realização de eventos beneficentes para angariar recursos
+
+Vamos juntos pelo bem! Junte-se a nós e faça parte dessa corrente de solidariedade. Juntos podemos fazer a diferença!
+2025-08-02 00:45:28,935 INFO openai_agent: Recebida requisição para IA. Prompt: preciso de ajuda para montar uma campanha para instagram
+2025-08-02 00:45:31,803 INFO openai_agent: Resposta da OpenAI: Claro, vou te dar algumas dicas para montar uma campanha eficaz no Instagram:
+
+1. Defina seus objetivos: Antes de começar, pense em qual é o seu objetivo com essa campanha. Você quer aumentar o número de seguidores, gerar mais engajamento com seu público, promover um produto/serviço ou apenas aumentar o reconhecimento da sua marca?
+
+2. Conheça o seu público-alvo: Entenda quem são as pessoas que você quer atingir com a campanha. Conheça seus interesses, comportamentos e preferências para criar conteúdos que sejam relevantes para eles.
+
+3. Crie um calendário de postagens: Planeje com antecedência as postagens que serão feitas durante a campanha, definindo os dias e horários ideais para alcançar o máximo de pessoas.
+
+4. Utilize hashtags relevantes: Utilize hashtags que sejam relacionadas ao seu negócio e ao conteúdo que está sendo postado. Isso ajudará a aumentar a visibilidade das suas postagens para pessoas que não te seguem.
+
+5. Produza conteúdo de qualidade: Invista em fotos e vídeos de alta qualidade para chamar a atenção do seu público. Procure por inspirações de outras marcas que fazem sucesso no Instagram.
+
+6. Faça parcerias: Busque por parcerias com influencers ou outras marcas que tenham a ver com o seu negócio para aumentar o alcance da sua campanha.
+
+7. Analise os resultados: Ao final da campanha, analise os resultados obtidos para poder identificar o que deu certo e o que pode ser melhorado em futuras campanhas.
+
+Espero que essas dicas te ajudem a montar uma campanha de sucesso no Instagram! Se tiver mais alguma dúvida, estou à disposição para ajudar.
+2025-08-02 00:45:48,658 INFO openai_agent: Recebida requisição para IA. Prompt: qual a sua função?
+2025-08-02 00:45:49,836 INFO openai_agent: Resposta da OpenAI: Minha função é conversar, interagir e ajudar com dúvidas e informações sobre diversos assuntos. Sou um assistente virtual desenvolvido para auxiliar de forma prática e eficiente.
+2025-08-02 01:08:14,353 INFO openai_agent: Recebida requisição para IA. Prompt: Criar nova campanha
+2025-08-02 01:08:17,136 INFO openai_agent: Resposta da OpenAI: Nome da campanha: "Juntos Somos Mais Fortes"
+
+Objetivo: Incentivar a união e solidariedade entre as pessoas em momentos de dificuldade e desafios, promovendo a colaboração e apoio mútuo.
+
+Como participar: Os interessados podem se cadastrar através de um formulário online, onde poderão oferecer ajuda ou solicitar apoio. Além disso, serão realizadas ações de conscientização e arrecadação de doações para pessoas em situação de vulnerabilidade.
+
+Benefícios: Fortalecimento da comunidade, sensibilização para questões sociais, promoção da empatia e solidariedade, e melhoria da qualidade de vida das pessoas em necessidade.
+
+Mídias de divulgação: Redes sociais, sites, e-mail marketing, panfletos, entre outros.
+
+Data de lançamento: 01 de dezembro de 2021.
+
+Vamos nos unir e fazer a diferença juntos! #JuntosSomosMaisFortes
+2025-08-02 01:48:24,552 INFO openai_agent: Recebida requisição para IA. Prompt: Criar nova campanha
+2025-08-02 01:48:27,155 INFO openai_agent: Resposta da OpenAI: Título da Campanha: "Juntos Pelo Bem"
+
+Objetivo da Campanha: Promover a solidariedade e a união em prol do bem comum.
+
+Mensagem da Campanha: Acreditamos que juntos podemos fazer a diferença! Seja através de pequenas ações do dia a dia ou de grandes gestos de solidariedade, cada um de nós pode contribuir para um mundo melhor. Vamos nos unir e fazer a diferença!
+
+Estratégias da Campanha:
+1. Realização de campanhas de arrecadação de alimentos, roupas e material escolar para famílias carentes.
+2. Incentivo ao voluntariado em instituições de caridade e projetos sociais.
+3. Promoção de ações de preservação do meio ambiente, como limpeza de praias e parques.
+4. Divulgação de histórias inspiradoras de solidariedade e empatia.
+
+Datas/Período da Campanha: A campanha "Juntos Pelo Bem" terá início em 1º de julho e seguirá até o final do ano.
+
+Parceiros da Campanha: Buscaremos parcerias com empresas, ONGs e instituições de ensino para ampliar o alcance e impacto da campanha.
+
+Divulgação da Campanha: A campanha será divulgada através de redes sociais, e-mail marketing, panfletos e eventos de sensibilização.
+
+Venha fazer parte! Juntos podemos fazer a diferença! #JuntosPeloBem
+2025-08-02 01:49:01,651 INFO openai_agent: Recebida requisição para IA. Prompt: sugerir estratégias
+2025-08-02 01:49:03,186 INFO openai_agent: Resposta da OpenAI: 1. Desenvolver uma estratégia de marketing digital que inclua a criação de conteúdo relevante para atrair e engajar a audiência-alvo.
+
+2. Investir em publicidade online segmentada para aumentar a visibilidade da marca e gerar leads qualificados.
+
+3. Implementar programas de fidelidade para reter clientes existentes e incentivar a recompra.
+
+4. Realizar parcerias com influenciadores digitais e marcas complementares para expandir o alcance e aumentar a credibilidade da marca.
+
+5. Oferecer promoções exclusivas e descontos especiais para incentivar a compra e aumentar as vendas.
+
+6. Utilizar ferramentas de análise de dados para monitorar o desempenho das campanhas e identificar oportunidades de otimização.
+
+7. Investir em estratégias de SEO para melhorar o ranking nos mecanismos de busca e aumentar a visibilidade online da marca.

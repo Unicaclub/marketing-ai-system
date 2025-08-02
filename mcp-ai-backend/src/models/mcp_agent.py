@@ -1,8 +1,9 @@
-from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import json
-
-db = SQLAlchemy()
+from src.models.db_instance import db
+from datetime import datetime
+import json
+from src.models.db_instance import db
 
 class MCPAgent(db.Model):
     __tablename__ = 'mcp_agents'

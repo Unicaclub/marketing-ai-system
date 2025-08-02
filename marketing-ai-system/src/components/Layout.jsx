@@ -138,6 +138,7 @@ const Layout = ({ children }) => {
           : `sidebar-desktop ${sidebarCollapsed ? 'collapsed' : ''}`
         }
         bg-white shadow-lg
+        h-full
       `}>
         {/* Sidebar Header */}
         <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200 relative">
@@ -176,7 +177,7 @@ const Layout = ({ children }) => {
         </div>
 
         {/* Navigation */}
-        <nav className="mt-6 px-3 overflow-y-auto">
+        <nav className="mt-6 px-3 overflow-y-auto max-h-[calc(100vh-120px)]">
           {/* Main Navigation */}
           <div className="space-y-1">
             {navigation.map((item) => renderNavItem(item, sidebarCollapsed && !isMobile))}

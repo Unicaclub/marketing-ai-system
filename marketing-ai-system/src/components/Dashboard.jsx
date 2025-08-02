@@ -321,13 +321,13 @@ const Dashboard = () => {
             <div className="flex items-center gap-3 p-3 bg-yellow-50 rounded-lg">
               <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
               <span className="text-sm text-gray-700">
-                Configurar integração do Instagram
+                <a href="/config" className="underline hover:text-primary">Configurar integração do Instagram</a>
               </span>
             </div>
             <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
               <span className="text-sm text-gray-700">
-                Analisar relatório de conversões
+                <a href="/analytics" className="underline hover:text-primary">Analisar relatório de conversões</a>
               </span>
             </div>
           </div>

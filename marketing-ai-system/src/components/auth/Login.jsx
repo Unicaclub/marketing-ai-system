@@ -32,7 +32,18 @@ const Login = () => {
       if (result.success) {
         navigate('/dashboard');
       } else {
-        setError(result.error || 'Erro ao fazer login');
+        // Mensagens de erro detalhadas
+        if (result.error) {
+          if (result.error.toLowerCase().includes('not found') || result.error.toLowerCase().includes('não encontrado')) {
+            setError('Usuário não encontrado. Verifique o e-mail digitado.');
+          } else if (result.error.toLowerCase().includes('senha') || result.error.toLowerCase().includes('password')) {
+            setError('Senha incorreta. Tente novamente.');
+          } else {
+            setError(result.error);
+          }
+        } else {
+          setError('Erro ao fazer login');
+        }
       }
     } catch (err) {
       setError('Erro inesperado. Tente novamente.');

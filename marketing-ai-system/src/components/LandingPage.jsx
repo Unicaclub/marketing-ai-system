@@ -199,6 +199,7 @@ const LandingPage = () => {
           <Link 
             to="/register" 
             className="btn-primary-gradient text-white px-12 py-4 rounded-lg font-semibold text-xl inline-flex items-center gap-3"
+            aria-label="Começar Agora - É Grátis"
           >
             Começar Agora - É Grátis
             <ArrowRight className="w-6 h-6" />

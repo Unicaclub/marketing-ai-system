@@ -55,41 +55,33 @@ const Chat = () => {
     setInputMessage('');
     setIsTyping(true);
 
-    // Simular resposta da IA
-    setTimeout(() => {
-      const aiResponse = generateAIResponse(inputMessage);
+    try {
+      const res = await fetch('http://localhost:5000/api/ai/ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: inputMessage })
+      });
+      const data = await res.json();
       const aiMessage = {
         id: Date.now() + 1,
         type: 'ai',
-        content: aiResponse,
+        content: data.response || data.error || 'Erro ao obter resposta da IA.',
         timestamp: new Date()
       };
       setMessages(prev => [...prev, aiMessage]);
+    } catch (err) {
+      setMessages(prev => [...prev, {
+        id: Date.now() + 2,
+        type: 'ai',
+        content: 'Erro ao conectar com o agente de IA.',
+        timestamp: new Date()
+      }]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
-  const generateAIResponse = (userInput) => {
-    const input = userInput.toLowerCase();
-    
-    if (input.includes('campanha') || input.includes('criar')) {
-      return 'Perfeito! Vou ajudá-lo a criar uma nova campanha. Preciso de algumas informações:\n\n1. Qual é o objetivo da campanha? (vendas, awareness, engajamento)\n2. Qual plataforma deseja usar? (Instagram, Facebook, WhatsApp)\n3. Qual é o público-alvo?\n4. Qual o orçamento disponível?\n\nCom essas informações, posso criar uma campanha otimizada para seus objetivos!';
-    }
-    
-    if (input.includes('analytics') || input.includes('métricas') || input.includes('relatório')) {
-      return 'Vou analisar as métricas das suas campanhas ativas:\n\n📊 **Resumo Geral:**\n• ROI médio: 450%\n• CTR: 3.2%\n• Conversões: 1,847\n• Alcance total: 45,230\n\n🎯 **Recomendações:**\n• Aumente o orçamento da campanha "Black Friday" (+23% performance)\n• Ajuste o público da campanha "Verão" (baixo engajamento)\n• Teste novos criativos para melhorar CTR\n\nQuer que eu detalhe alguma campanha específica?';
-    }
-    
-    if (input.includes('roi') || input.includes('performance')) {
-      return 'Excelente pergunta sobre ROI! Baseado nos dados das suas campanhas:\n\n💰 **ROI Atual: 450%**\n\n**Campanhas com melhor performance:**\n1. Campanha Verão: 510% ROI\n2. Lançamento Produto X: 420% ROI\n3. Black Friday 2024: 380% ROI\n\n**Dicas para melhorar:**\n• Realoque orçamento para campanhas de alto ROI\n• Teste A/B em criativos\n• Otimize segmentação de público\n• Ajuste horários de publicação\n\nQuer que eu implemente alguma dessas otimizações?';
-    }
-    
-    if (input.includes('whatsapp') || input.includes('instagram') || input.includes('facebook')) {
-      return 'Ótimo! Posso ajudar com integrações das plataformas sociais:\n\n📱 **WhatsApp Business API:**\n• Automação de mensagens\n• Chatbots inteligentes\n• Campanhas de remarketing\n\n📸 **Instagram:**\n• Posts automatizados\n• Stories programados\n• Análise de hashtags\n\n👥 **Facebook:**\n• Ads otimizados\n• Pixel de conversão\n• Lookalike audiences\n\nQual plataforma gostaria de configurar primeiro?';
-    }
-    
-    return 'Entendi! Posso ajudá-lo com isso. Como assistente de marketing com IA, tenho acesso a todas as funcionalidades da plataforma:\n\n✨ **Posso fazer:**\n• Criar e otimizar campanhas\n• Analisar dados e métricas\n• Gerar conteúdo criativo\n• Configurar automações\n• Integrar plataformas\n• Relatórios personalizados\n\nPoderia ser mais específico sobre o que precisa? Assim posso dar uma resposta mais direcionada!';
-  };
+  // Função de resposta simulada removida. Agora a resposta vem do backend.
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -214,10 +206,18 @@ const Chat = () => {
       <div className="bg-white border-t border-gray-200 p-4 rounded-b-xl">
         <div className="flex items-end gap-3">
           <div className="flex gap-2">
-            <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+            <button
+              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              title="Anexar arquivo (em breve)"
+              disabled
+            >
               <Paperclip className="w-5 h-5" />
             </button>
-            <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+            <button
+              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              title="Enviar imagem (em breve)"
+              disabled
+            >
               <Image className="w-5 h-5" />
             </button>
           </div>

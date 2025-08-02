@@ -1,3 +1,4 @@
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext();
@@ -24,38 +25,40 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
-    // Simulação de login - em produção seria uma chamada à API
     try {
-      const userData = {
-        id: 1,
-        name: 'Usuário Demo',
-        email: email,
-        avatar: null,
-        createdAt: new Date().toISOString()
-      };
-      
-      setUser(userData);
-      localStorage.setItem('user', JSON.stringify(userData));
-      return { success: true };
+      const res = await fetch(`${API_URL}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setUser(data.user);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        return { success: true };
+      } else {
+        return { success: false, error: data.error || 'Credenciais inválidas' };
+      }
     } catch (error) {
       return { success: false, error: 'Erro ao fazer login' };
     }
   };
 
   const register = async (name, email, password) => {
-    // Simulação de registro - em produção seria uma chamada à API
     try {
-      const userData = {
-        id: Date.now(),
-        name: name,
-        email: email,
-        avatar: null,
-        createdAt: new Date().toISOString()
-      };
-      
-      setUser(userData);
-      localStorage.setItem('user', JSON.stringify(userData));
-      return { success: true };
+      const res = await fetch(`${API_URL}/users`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: name, email, password })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setUser(data.user);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        return { success: true };
+      } else {
+        return { success: false, error: data.error || 'Erro ao criar conta' };
+      }
     } catch (error) {
       return { success: false, error: 'Erro ao criar conta' };
     }

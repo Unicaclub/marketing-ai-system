@@ -1,0 +1,44 @@
+{
+  "integrations": {
+    "whatsapp": {
+      "enabled": false,
+      "apiKey": "",
+      "webhookUrl": "",
+      "status": "disconnected"
+    },
+    "instagram": {
+      "enabled": true,
+      "apiKey": "ig_xxxxxxxxxxxxxxxxxx",
+      "accessToken": "",
+      "status": "connected"
+    },
+    "facebook": {
+      "enabled": true,
+      "apiKey": "fb_xxxxxxxxxxxxxxxxxx",
+      "appSecret": "",
+      "status": "connected"
+    },
+    "openai": {
+      "enabled": true,
+      "apiKey": "",
+      "model": "gpt-4",
+      "status": "connected"
+    }
+  },
+  "notifications": {
+    "campaignUpdates": true,
+    "performanceAlerts": true,
+    "weeklyReports": false,
+    "budgetAlerts": true,
+    "emailNotifications": true,
+    "pushNotifications": false
+  },
+  "generalSettings": {
+    "timezone": "America/Sao_Paulo",
+    "currency": "BRL",
+    "language": "pt-BR",
+    "dateFormat": "DD/MM/YYYY",
+    "autoOptimization": true,
+    "dataRetention": "12months"
+  }
+}

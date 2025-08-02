@@ -7,14 +7,14 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # Configuração do banco de dados
-    DATABASE_TYPE = os.environ.get('DATABASE_TYPE', 'sqlite')  # sqlite, postgresql, mysql
+    DATABASE_TYPE = 'postgresql'  # Centralizando a configuração do banco de dados
     
     # Configurações PostgreSQL
-    POSTGRES_HOST = os.environ.get('POSTGRES_HOST', 'localhost')
+    POSTGRES_HOST = os.environ.get('POSTGRES_HOST', '127.0.0.1')
     POSTGRES_PORT = os.environ.get('POSTGRES_PORT', '5432')
-    POSTGRES_DB = os.environ.get('POSTGRES_DB', 'marketing_ai_db')
-    POSTGRES_USER = os.environ.get('POSTGRES_USER', 'marketing_ai_user')
-    POSTGRES_PASSWORD = os.environ.get('POSTGRES_PASSWORD', 'marketing_ai_pass')
+    POSTGRES_DB = os.environ.get('POSTGRES_DB', 'painel-master')
+    POSTGRES_USER = os.environ.get('POSTGRES_USER', 'postgres')
+    POSTGRES_PASSWORD = os.environ.get('POSTGRES_PASSWORD', '0000')
     
     # Configurações MySQL
     MYSQL_HOST = os.environ.get('MYSQL_HOST', 'localhost')
@@ -40,16 +40,15 @@ class Config:
 class DevelopmentConfig(Config):
     """Configuração para desenvolvimento"""
     DEBUG = True
-    DATABASE_TYPE = 'sqlite'  # SQLite para desenvolvimento
     
     @property
     def SQLALCHEMY_DATABASE_URI(self):
-        return f"sqlite:///{os.path.join(os.path.dirname(__file__), 'src', 'database', 'app.db')}"
+        password = quote_plus(self.POSTGRES_PASSWORD)
+        return f"postgresql://{self.POSTGRES_USER}:{password}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
 class ProductionConfig(Config):
     """Configuração para produção"""
     DEBUG = False
-    DATABASE_TYPE = 'postgresql'  # PostgreSQL para produção
     
     @property
     def SQLALCHEMY_DATABASE_URI(self):

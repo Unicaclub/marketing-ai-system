@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   ArrowLeft,
   ArrowRight,
@@ -23,6 +23,7 @@ import {
   Save,
   Play
 } from 'lucide-react';
+
 
 const CampaignCreator = ({ onClose, onSave }) => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -55,6 +56,22 @@ const CampaignCreator = ({ onClose, onSave }) => {
     salesStrategy: null,
     productDatabase: null
   });
+
+  // Handlers de upload de mídia (deve ficar logo após os hooks de estado)
+  const fileInputRef = useRef(null);
+  const handleMediaSelect = (e) => {
+    const files = Array.from(e.target.files);
+    setCampaignData(prev => ({
+      ...prev,
+      content: {
+        ...prev.content,
+        media: files
+      }
+    }));
+  };
+  const handleSelectFilesClick = () => {
+    if (fileInputRef.current) fileInputRef.current.click();
+  };
 
   const campaignObjectives = [
     {
@@ -517,9 +534,31 @@ const CampaignCreator = ({ onClose, onSave }) => {
             <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <p className="text-gray-600 mb-2">Arraste arquivos aqui ou clique para selecionar</p>
             <p className="text-sm text-gray-500">Suporte para imagens, vídeos e documentos</p>
-            <button className="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <input
+              type="file"
+              multiple
+              accept="image/*,video/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+              ref={fileInputRef}
+              style={{ display: 'none' }}
+              onChange={handleMediaSelect}
+            />
+            <button
+              type="button"
+              className="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors"
+              onClick={handleSelectFilesClick}
+            >
               Selecionar Arquivos
             </button>
+            {campaignData.content.media && campaignData.content.media.length > 0 && (
+              <div className="mt-4 text-left">
+                <p className="text-sm font-medium mb-2">Arquivos selecionados:</p>
+                <ul className="text-xs text-gray-700">
+                  {campaignData.content.media.map((file, idx) => (
+                    <li key={idx}>{file.name}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </div>
 

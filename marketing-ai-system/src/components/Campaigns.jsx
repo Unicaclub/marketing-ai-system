@@ -23,6 +23,7 @@ const Campaigns = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [showCreator, setShowCreator] = useState(false);
+  const [editingCampaign, setEditingCampaign] = useState(null);
   const [campaigns, setCampaigns] = useState([
     {
       id: 1,
@@ -127,22 +128,48 @@ const Campaigns = () => {
     return matchesSearch && matchesFilter;
   });
 
+
   const handleCreateCampaign = (campaignData) => {
-    const newCampaign = {
-      id: Date.now(),
-      ...campaignData,
-      status: 'draft',
-      reach: 0,
-      conversions: 0,
-      roi: 0,
-      spent: 0,
-      ctr: 0,
-      createdAt: new Date().toISOString().split('T')[0],
-      endDate: campaignData.schedule?.endDate?.split('T')[0] || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-    };
-    
-    setCampaigns(prev => [newCampaign, ...prev]);
+    if (editingCampaign) {
+      // Editar campanha existente
+      setCampaigns(prev => prev.map(c => c.id === editingCampaign.id ? { ...c, ...campaignData } : c));
+      setEditingCampaign(null);
+    } else {
+      // Nova campanha
+      const newCampaign = {
+        id: Date.now(),
+        ...campaignData,
+        status: 'draft',
+        reach: 0,
+        conversions: 0,
+        roi: 0,
+        spent: 0,
+        ctr: 0,
+        createdAt: new Date().toISOString().split('T')[0],
+        endDate: campaignData.schedule?.endDate?.split('T')[0] || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+      };
+      setCampaigns(prev => [newCampaign, ...prev]);
+    }
     setShowCreator(false);
+  };
+
+  const handlePauseActivate = (id) => {
+    setCampaigns(prev => prev.map(c =>
+      c.id === id
+        ? { ...c, status: c.status === 'active' ? 'paused' : 'active' }
+        : c
+    ));
+  };
+
+  const handleEdit = (campaign) => {
+    setEditingCampaign(campaign);
+    setShowCreator(true);
+  };
+
+  const handleDelete = (id) => {
+    if (window.confirm('Tem certeza que deseja excluir esta campanha?')) {
+      setCampaigns(prev => prev.filter(c => c.id !== id));
+    }
   };
 
   return (
@@ -298,21 +325,22 @@ const Campaigns = () => {
 
               {/* Actions */}
               <div className="flex gap-2">
-                {campaign.status === 'active' ? (
-                  <button className="flex-1 px-3 py-2 bg-orange-50 text-orange-600 rounded-lg hover:bg-orange-100 transition-colors text-sm font-medium flex items-center justify-center gap-1">
-                    <Pause className="w-4 h-4" />
-                    Pausar
-                  </button>
-                ) : (
-                  <button className="flex-1 px-3 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors text-sm font-medium flex items-center justify-center gap-1">
-                    <Play className="w-4 h-4" />
-                    Ativar
-                  </button>
-                )}
-                <button className="px-3 py-2 bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors">
+                <button
+                  className={`flex-1 px-3 py-2 ${campaign.status === 'active' ? 'bg-orange-50 text-orange-600 hover:bg-orange-100' : 'bg-green-50 text-green-600 hover:bg-green-100'} rounded-lg transition-colors text-sm font-medium flex items-center justify-center gap-1`}
+                  onClick={() => handlePauseActivate(campaign.id)}
+                >
+                  {campaign.status === 'active' ? <><Pause className="w-4 h-4" /> Pausar</> : <><Play className="w-4 h-4" /> Ativar</>}
+                </button>
+                <button
+                  className="px-3 py-2 bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
+                  onClick={() => handleEdit(campaign)}
+                >
                   <Edit className="w-4 h-4" />
                 </button>
-                <button className="px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors">
+                <button
+                  className="px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+                  onClick={() => handleDelete(campaign.id)}
+                >
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
@@ -347,8 +375,12 @@ const Campaigns = () => {
       {/* Campaign Creator Modal */}
       {showCreator && (
         <CampaignCreator
-          onClose={() => setShowCreator(false)}
+          onClose={() => {
+            setShowCreator(false);
+            setEditingCampaign(null);
+          }}
           onSave={handleCreateCampaign}
+          {...(editingCampaign ? { ...editingCampaign } : {})}
         />
       )}
     </div>

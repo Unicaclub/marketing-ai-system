@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import {
   Key,
   Shield,
@@ -17,7 +18,25 @@ import {
   Smartphone
 } from 'lucide-react';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 const Config = () => {
+  // Dark mode
+  const [theme, setTheme] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('theme') || 'light';
+    }
+    return 'light';
+  });
+
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('integrations');
   const [showApiKeys, setShowApiKeys] = useState({});
   const [integrations, setIntegrations] = useState({
@@ -29,23 +48,66 @@ const Config = () => {
     },
     instagram: {
       enabled: true,
-      apiKey: 'ig_xxxxxxxxxxxxxxxxxx',
+      apiKey: '',
       accessToken: '',
       status: 'connected'
     },
     facebook: {
       enabled: true,
-      apiKey: 'fb_xxxxxxxxxxxxxxxxxx',
+      apiKey: '',
       appSecret: '',
       status: 'connected'
     },
     openai: {
       enabled: true,
-      apiKey: 'sk-xxxxxxxxxxxxxxxxxx',
+      apiKey: '',
       model: 'gpt-4',
       status: 'connected'
     }
   });
+
+  // Estado do agente global de vendas
+  const [salesAgent, setSalesAgent] = useState({ active: false, platforms: [], products: [], agent_id: null });
+  const [allProducts, setAllProducts] = useState([]);
+  const [loadingAgent, setLoadingAgent] = useState(false);
+
+  // Buscar status do agente e produtos ao carregar
+  useEffect(() => {
+    if (!user) return;
+    setLoadingAgent(true);
+    // Buscar status/configuração do agente
+    fetch(`${API_URL}/sales_agent/${user.id}`)
+      .then(res => res.json())
+      .then(data => setSalesAgent(data))
+      .finally(() => setLoadingAgent(false));
+    // Buscar produtos do usuário
+    fetch(`${API_URL}/product_database?user_id=${user.id}`)
+      .then(res => res.json())
+      .then(data => setAllProducts(data));
+  }, [user]);
+  useEffect(() => {
+    const fetchApiKeys = async () => {
+      if (!user) return;
+      try {
+        const res = await fetch(`${API_URL}/user_api_keys/${user.id}`);
+        if (res.ok) {
+          const keys = await res.json();
+          setIntegrations(prev => {
+            const updated = { ...prev };
+            keys.forEach(k => {
+              if (updated[k.service]) {
+                updated[k.service].apiKey = k.api_key;
+              }
+            });
+            return updated;
+          });
+        }
+      } catch (err) {
+        // erro silencioso
+      }
+    };
+    fetchApiKeys();
+  }, [user]);
 
   const [notifications, setNotifications] = useState({
     campaignUpdates: true,
@@ -121,7 +183,8 @@ const Config = () => {
   const tabs = [
     { id: 'integrations', name: 'Integrações', icon: <Zap className="w-5 h-5" /> },
     { id: 'notifications', name: 'Notificações', icon: <Bell className="w-5 h-5" /> },
-    { id: 'general', name: 'Geral', icon: <Settings className="w-5 h-5" /> }
+    { id: 'general', name: 'Geral', icon: <Settings className="w-5 h-5" /> },
+    { id: 'appearance', name: 'Aparência', icon: <Globe className="w-5 h-5" /> }
   ];
 
   const IntegrationCard = ({ service, config, icon, title, description }) => (
@@ -256,6 +319,27 @@ const Config = () => {
         </div>
 
         <div className="p-6">
+          {/* Appearance Tab */}
+          {activeTab === 'appearance' && (
+            <div className="space-y-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Tema do Sistema</h3>
+              <p className="text-gray-600 dark:text-gray-300 mb-6">Escolha entre modo claro ou escuro para a interface.</p>
+              <div className="flex items-center gap-4">
+                <button
+                  className={`px-6 py-3 rounded-lg font-medium transition-colors ${theme === 'light' ? 'bg-primary text-white' : 'bg-gray-200 dark:bg-gray-700 dark:text-white'}`}
+                  onClick={() => setTheme('light')}
+                >
+                  Claro
+                </button>
+                <button
+                  className={`px-6 py-3 rounded-lg font-medium transition-colors ${theme === 'dark' ? 'bg-primary text-white' : 'bg-gray-200 dark:bg-gray-700 dark:text-white'}`}
+                  onClick={() => setTheme('dark')}
+                >
+                  Escuro
+                </button>
+              </div>
+            </div>
+          )}
           {/* Integrations Tab */}
           {activeTab === 'integrations' && (
             <div className="space-y-6">
@@ -298,6 +382,92 @@ const Config = () => {
                   title="OpenAI"
                   description="IA para geração de conteúdo"
                 />
+              </div>
+
+              {/* Painel do Agente Global de Vendas */}
+              <div className="mt-10 p-6 bg-blue-50 border border-blue-200 rounded-xl">
+                <h3 className="text-lg font-bold text-blue-900 mb-2">Agente Global de Vendas</h3>
+                <p className="text-blue-700 mb-4">Configure o agente especialista em conversão para atuar nas plataformas e produtos desejados.</p>
+                {loadingAgent ? (
+                  <div className="text-blue-600">Carregando configurações do agente...</div>
+                ) : (
+                  <>
+                    <div className="mb-4">
+                      <label className="block font-medium text-gray-700 mb-2">Ativar nas plataformas:</label>
+                      <div className="flex gap-4">
+                        {['whatsapp', 'instagram', 'facebook'].map(platform => (
+                          <label key={platform} className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={salesAgent.platforms?.includes(platform)}
+                              onChange={e => {
+                                const newPlatforms = e.target.checked
+                                  ? [...(salesAgent.platforms || []), platform]
+                                  : (salesAgent.platforms || []).filter(p => p !== platform);
+                                setSalesAgent(sa => ({ ...sa, platforms: newPlatforms }));
+                              }}
+                            />
+                            <span className="capitalize">{platform}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="mb-4">
+                      <label className="block font-medium text-gray-700 mb-2">Produtos para o agente vender:</label>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        {allProducts.length === 0 && <span className="text-gray-500">Nenhum produto cadastrado.</span>}
+                        {allProducts.map(prod => (
+                          <label key={prod.id} className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={salesAgent.products?.includes(prod.id)}
+                              onChange={e => {
+                                const newProducts = e.target.checked
+                                  ? [...(salesAgent.products || []), prod.id]
+                                  : (salesAgent.products || []).filter(pid => pid !== prod.id);
+                                setSalesAgent(sa => ({ ...sa, products: newProducts }));
+                              }}
+                            />
+                            <span>{prod.name}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                    <button
+                      className="px-6 py-2 bg-blue-700 text-white rounded-lg font-medium hover:bg-blue-800 transition-colors"
+                      onClick={async () => {
+                        if (!user) return;
+                        // Ativar/criar agente
+                        let agentId = salesAgent.agent_id;
+                        if (!agentId) {
+                          const res = await fetch(`${API_URL}/sales_agent`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ user_id: user.id })
+                          });
+                          const data = await res.json();
+                          agentId = data.agent_id;
+                          setSalesAgent(sa => ({ ...sa, agent_id: agentId, active: true }));
+                        }
+                        // Salvar plataformas
+                        await fetch(`${API_URL}/sales_agent/${agentId}/platforms`, {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ platforms: (salesAgent.platforms || []).map(p => ({ platform: p, active: true })) })
+                        });
+                        // Salvar produtos
+                        await fetch(`${API_URL}/sales_agent/${agentId}/products`, {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ product_ids: salesAgent.products || [] })
+                        });
+                        alert('Configurações do agente de vendas salvas!');
+                      }}
+                    >
+                      Salvar Configurações do Agente
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           )}
@@ -520,7 +690,34 @@ const Config = () => {
 
       {/* Save Button */}
       <div className="flex justify-end">
-        <button className="btn-primary-gradient text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2">
+        <button
+          className="btn-primary-gradient text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2"
+          onClick={async () => {
+            if (!user) {
+              alert('Faça login para salvar suas configurações.');
+              return;
+            }
+            try {
+              // Salvar API Keys de cada integração
+              for (const service of Object.keys(integrations)) {
+                if (integrations[service].apiKey) {
+                  await fetch(`${API_URL}/user_api_keys`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      user_id: user.id,
+                      service,
+                      api_key: integrations[service].apiKey
+                    })
+                  });
+                }
+              }
+              alert('Configurações salvas com sucesso!');
+            } catch (err) {
+              alert('Erro ao conectar com o backend: ' + err.message);
+            }
+          }}
+        >
           <Save className="w-5 h-5" />
           Salvar Configurações
         </button>
