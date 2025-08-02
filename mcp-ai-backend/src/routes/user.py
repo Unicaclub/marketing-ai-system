@@ -1,10 +1,11 @@
-
-
 from flask import Blueprint, request, jsonify
 from src.models.user import User
 from src.models.db_instance import db
 from src.models.zapi_credentials import ZapiCredentials
 import requests
+
+# Definição do Blueprint para evitar NameError
+user_bp = Blueprint('user_bp', __name__)
 @user_bp.route('/zapi/credentials', methods=['POST'])
 def save_zapi_credentials():
     data = request.get_json()
