@@ -56,7 +56,7 @@ const Chat = () => {
     setIsTyping(true);
 
     try {
-      const res = await fetch('http://localhost:5000/api/ai/ask', {
+      const res = await fetch('https://marketing-ai-system-production.up.railway.app/api/ai/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: inputMessage })
