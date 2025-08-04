@@ -17,6 +17,8 @@ import AdminPanel from './components/AdminPanel';
 import WhatsAppManager from './components/platforms/WhatsAppManager';
 import InstagramManager from './components/platforms/InstagramManager';
 import FacebookManager from './components/platforms/FacebookManager';
+import ProtectedRoute from './components/ProtectedRoute';
+import PublicRoute from './components/PublicRoute';
 
 // Context para autenticação
 import { AuthProvider } from './contexts/AuthContext';
@@ -29,22 +31,66 @@ function App() {
           <Routes>
             {/* Páginas públicas */}
             <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            } />
+            <Route path="/register" element={
+              <PublicRoute>
+                <Register />
+              </PublicRoute>
+            } />
             <Route path="/admin" element={<AdminPanel />} />
             
             {/* Páginas protegidas com layout */}
-            <Route path="/dashboard" element={<Layout><Dashboard /></Layout>} />
-            <Route path="/profile" element={<Layout><Profile /></Layout>} />
-            <Route path="/config" element={<Layout><Config /></Layout>} />
-            <Route path="/campaigns" element={<Layout><Campaigns /></Layout>} />
-            <Route path="/analytics" element={<Layout><Analytics /></Layout>} />
-            <Route path="/chat" element={<Layout><Chat /></Layout>} />
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Layout><Dashboard /></Layout>
+              </ProtectedRoute>
+            } />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <Layout><Profile /></Layout>
+              </ProtectedRoute>
+            } />
+            <Route path="/config" element={
+              <ProtectedRoute>
+                <Layout><Config /></Layout>
+              </ProtectedRoute>
+            } />
+            <Route path="/campaigns" element={
+              <ProtectedRoute>
+                <Layout><Campaigns /></Layout>
+              </ProtectedRoute>
+            } />
+            <Route path="/analytics" element={
+              <ProtectedRoute>
+                <Layout><Analytics /></Layout>
+              </ProtectedRoute>
+            } />
+            <Route path="/chat" element={
+              <ProtectedRoute>
+                <Layout><Chat /></Layout>
+              </ProtectedRoute>
+            } />
             
             {/* Páginas de gerenciamento de plataformas */}
-            <Route path="/platforms/whatsapp" element={<Layout><WhatsAppManager /></Layout>} />
-            <Route path="/platforms/instagram" element={<Layout><InstagramManager /></Layout>} />
-            <Route path="/platforms/facebook" element={<Layout><FacebookManager /></Layout>} />
+            <Route path="/platforms/whatsapp" element={
+              <ProtectedRoute>
+                <Layout><WhatsAppManager /></Layout>
+              </ProtectedRoute>
+            } />
+            <Route path="/platforms/instagram" element={
+              <ProtectedRoute>
+                <Layout><InstagramManager /></Layout>
+              </ProtectedRoute>
+            } />
+            <Route path="/platforms/facebook" element={
+              <ProtectedRoute>
+                <Layout><FacebookManager /></Layout>
+              </ProtectedRoute>
+            } />
           </Routes>
         </div>
       </Router>

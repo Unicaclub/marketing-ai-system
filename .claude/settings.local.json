@@ -5,7 +5,8 @@
       "Bash(python:*)",
       "Bash(pip install:*)",
       "Bash(timeout:*)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(curl:*)"
     ],
     "deny": []
   }

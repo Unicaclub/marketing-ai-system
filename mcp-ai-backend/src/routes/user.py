@@ -86,6 +86,11 @@ def create_user():
     try:
         user = User(username=username, email=email)
         user.set_password(password)
+        
+        # Verificar se a senha foi definida corretamente
+        if not user.password_hash:
+            return jsonify({'success': False, 'error': 'Erro ao gerar hash da senha'}), 500
+        
         db.session.add(user)
         db.session.commit()
         return jsonify({'success': True, 'user': user.to_dict()}), 201
@@ -104,6 +109,8 @@ def login():
     user = User.query.filter_by(email=email).first()
     if not user:
         return jsonify({'success': False, 'error': 'Usuário não encontrado'}), 404
+    if not user.password_hash:
+        return jsonify({'success': False, 'error': 'Conta inválida. Entre em contato com o suporte'}), 401
     if not user.check_password(password):
         return jsonify({'success': False, 'error': 'Senha incorreta'}), 401
     return jsonify({'success': True, 'user': user.to_dict()}), 200

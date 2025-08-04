@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Bot, Mail, Lock, Eye, EyeOff, LogIn } from 'lucide-react';
 
@@ -14,6 +14,10 @@ const Login = () => {
 
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Pegar a página de onde o usuário veio, ou dashboard como padrão
+  const from = location.state?.from?.pathname || '/dashboard';
 
   const handleChange = (e) => {
     setFormData({
@@ -34,7 +38,7 @@ const Login = () => {
     try {
       const result = await login(formData.email, formData.password);
       if (result.success) {
-        navigate('/dashboard');
+        navigate(from, { replace: true });
       } else {
         // Mensagens de erro detalhadas
         if (result.error) {
