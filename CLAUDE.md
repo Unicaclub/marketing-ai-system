@@ -35,11 +35,17 @@ cd mcp-ai-backend && pip install -r requirements.txt
 # Run development server
 cd mcp-ai-backend && python src/main.py
 
-# Database migrations
-cd mcp-ai-backend && python migrate.py
+# Database operations
+cd mcp-ai-backend && python migrate.py init    # Initialize database
+cd mcp-ai-backend && python migrate.py reset   # Reset database
+cd mcp-ai-backend && python migrate.py seed    # Seed with initial data
+cd mcp-ai-backend && python migrate.py check   # Check connection
 
-# Run with production server
+# Run with production server (waitress)
 cd mcp-ai-backend && python -m waitress --host=0.0.0.0 --port=5000 src.main:app
+
+# Run with gunicorn (production)
+cd mcp-ai-backend && gunicorn src.main:app
 ```
 
 ## Architecture
@@ -52,10 +58,11 @@ cd mcp-ai-backend && python -m waitress --host=0.0.0.0 --port=5000 src.main:app
 - **API Communication**: Fetch API with `VITE_API_URL` environment variable
 
 ### Backend Structure
-- **Models**: SQLAlchemy models for core entities (Campaign, MCPAgent, User, ProductDatabase, SalesInteraction)
-- **Routes**: Blueprint-based routing organized by feature
-- **Services**: Business logic layer for complex operations
-- **Database**: Flexible database configuration supporting PostgreSQL (production), MySQL, and SQLite (development)
+- **Models**: SQLAlchemy models in `src/models/` (Campaign, MCPAgent, User, ProductDatabase, SalesInteraction, ZAPICredentials, UserAPIKey)
+- **Routes**: Blueprint-based routing in `src/routes/` organized by feature (campaign, mcp_agent, sales_agent, platform integrations)
+- **Services**: Business logic layer in `src/services/` for complex operations (MCP agent service, sales strategy service)
+- **Database**: Flexible configuration in `config.py` supporting PostgreSQL (production), MySQL, and SQLite (development)
+- **Static Files**: Served from `src/static/` for production SPA deployment
 
 ### Key Models
 - **MCPAgent**: AI agents with personality, sales approach, and performance metrics
@@ -104,6 +111,9 @@ Environment variables for database connection:
 
 - Frontend uses package manager: `pnpm@10.4.1`
 - Backend serves static files from `src/static/` for production deployment
-- CORS enabled for all origins in development
-- Database migrations handled via Alembic
-- Production deployment configured for Railway with Procfile and requirements.txt
+- CORS enabled for all origins in development (`origins="*"`)
+- Database migrations handled via custom `migrate.py` script (not Alembic)
+- Production deployment configured for Railway with Procfile (`web: gunicorn src.main:app`)
+- Backend uses Waitress WSGI server for development, Gunicorn for production
+- Frontend build outputs to `dist/` directory
+- Path aliasing configured with `@` pointing to `src/` directory

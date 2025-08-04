@@ -14,6 +14,7 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -23,12 +24,20 @@ const Register = () => {
       ...formData,
       [e.target.name]: e.target.value
     });
+    // Limpar mensagens quando usuário começar a digitar
+    if (error) {
+      setError('');
+    }
+    if (success) {
+      setSuccess('');
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setSuccess('');
 
     // Validações
     if (formData.password !== formData.confirmPassword) {
@@ -46,7 +55,11 @@ const Register = () => {
     try {
       const result = await register(formData.name, formData.email, formData.password);
       if (result.success) {
-        navigate('/dashboard');
+        setSuccess(result.message || 'Conta criada com sucesso!');
+        // Aguarda um pouco para mostrar a mensagem de sucesso antes de redirecionar
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 1500);
       } else {
         setError(result.error || 'Erro ao criar conta');
       }
@@ -103,6 +116,12 @@ const Register = () => {
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
                 {error}
+              </div>
+            )}
+            
+            {success && (
+              <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+                {success}
               </div>
             )}
 

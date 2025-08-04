@@ -20,6 +20,10 @@ const Login = () => {
       ...formData,
       [e.target.name]: e.target.value
     });
+    // Limpar erro quando usuário começar a digitar
+    if (error) {
+      setError('');
+    }
   };
 
   const handleSubmit = async (e) => {

@@ -16,7 +16,7 @@ from config import config
 
 def init_database(config_name='development'):
     """Inicializa o banco de dados criando todas as tabelas"""
-    print(f"🔧 Inicializando banco de dados com configuração: {config_name}")
+    print(f"Inicializando banco de dados com configuracao: {config_name}")
     
     app = create_app(config_name)
     
@@ -29,38 +29,38 @@ def init_database(config_name='development'):
         try:
             # Criar todas as tabelas
             db.create_all()
-            print("✅ Tabelas criadas com sucesso!")
+            print("Tabelas criadas com sucesso!")
             
             # Verificar se as tabelas foram criadas
             inspector = db.inspect(db.engine)
             tables = inspector.get_table_names()
-            print(f"📋 Tabelas criadas: {', '.join(tables)}")
+            print(f"Tabelas criadas: {', '.join(tables)}")
             
             return True
             
         except Exception as e:
-            print(f"❌ Erro ao criar tabelas: {str(e)}")
+            print(f"Erro ao criar tabelas: {str(e)}")
             return False
 
 def drop_database(config_name='development'):
     """Remove todas as tabelas do banco de dados"""
-    print(f"🗑️  Removendo todas as tabelas do banco de dados...")
+    print(f"Removendo todas as tabelas do banco de dados...")
     
     app = create_app(config_name)
     
     with app.app_context():
         try:
             db.drop_all()
-            print("✅ Todas as tabelas foram removidas!")
+            print("Todas as tabelas foram removidas!")
             return True
             
         except Exception as e:
-            print(f"❌ Erro ao remover tabelas: {str(e)}")
+            print(f"Erro ao remover tabelas: {str(e)}")
             return False
 
 def reset_database(config_name='development'):
     """Remove e recria todas as tabelas"""
-    print(f"🔄 Resetando banco de dados...")
+    print(f"Resetando banco de dados...")
     
     if drop_database(config_name):
         return init_database(config_name)
@@ -68,7 +68,7 @@ def reset_database(config_name='development'):
 
 def seed_database(config_name='development'):
     """Popula o banco de dados com dados iniciais"""
-    print(f"🌱 Populando banco de dados com dados iniciais...")
+    print(f"Populando banco de dados com dados iniciais...")
     
     app = create_app(config_name)
     
@@ -86,7 +86,7 @@ def seed_database(config_name='development'):
                     email='admin@marketingai.com'
                 )
                 db.session.add(admin_user)
-                print("👤 Usuário administrador criado")
+                print("Usuário administrador criado")
             
             # Criar usuário demo
             demo_user = User.query.filter_by(email='demo@marketingai.com').first()
@@ -96,7 +96,7 @@ def seed_database(config_name='development'):
                     email='demo@marketingai.com'
                 )
                 db.session.add(demo_user)
-                print("👤 Usuário demo criado")
+                print("Usuário demo criado")
             
             # Criar agente MCP padrão (comentado por enquanto)
             # mcp_agent = MCPAgent.query.filter_by(name='Agente Principal').first()
@@ -108,21 +108,21 @@ def seed_database(config_name='development'):
             #         is_active=True
             #     )
             #     db.session.add(mcp_agent)
-            #     print("🤖 Agente MCP principal criado")
+            #     print("Agente MCP principal criado")
             
             # Salvar alterações
             db.session.commit()
-            print("✅ Dados iniciais inseridos com sucesso!")
+            print("Dados iniciais inseridos com sucesso!")
             return True
             
         except Exception as e:
             db.session.rollback()
-            print(f"❌ Erro ao inserir dados iniciais: {str(e)}")
+            print(f"Erro ao inserir dados iniciais: {str(e)}")
             return False
 
 def check_connection(config_name='development'):
     """Verifica a conexão com o banco de dados"""
-    print(f"🔍 Verificando conexão com o banco de dados...")
+    print(f"Verificando conexão com o banco de dados...")
     
     app = create_app(config_name)
     
@@ -142,14 +142,14 @@ def check_connection(config_name='development'):
             else:
                 db_type = 'SQLite'
             
-            print(f"✅ Conexão estabelecida com sucesso!")
-            print(f"📊 Tipo de banco: {db_type}")
-            print(f"🔗 URI: {db_uri}")
+            print(f"Conexão estabelecida com sucesso!")
+            print(f"Tipo de banco: {db_type}")
+            print(f"URI: {db_uri}")
             
             return True
             
         except Exception as e:
-            print(f"❌ Erro de conexão: {str(e)}")
+            print(f"Erro de conexão: {str(e)}")
             return False
 
 def main():
@@ -162,8 +162,8 @@ def main():
     
     args = parser.parse_args()
     
-    print(f"🚀 Marketing AI System - Migração de Banco de Dados")
-    print(f"📅 {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"Marketing AI System - Migracao de Banco de Dados")
+    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("-" * 50)
     
     success = False
@@ -181,9 +181,9 @@ def main():
     
     print("-" * 50)
     if success:
-        print("✅ Operação concluída com sucesso!")
+        print("Operação concluída com sucesso!")
     else:
-        print("❌ Operação falhou!")
+        print("Operação falhou!")
         sys.exit(1)
 
 if __name__ == '__main__':

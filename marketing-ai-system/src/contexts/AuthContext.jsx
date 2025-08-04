@@ -31,16 +31,33 @@ export const AuthProvider = ({ children }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       });
+      
+      if (!res.ok) {
+        const data = await res.json();
+        let errorMessage = 'Erro ao fazer login';
+        
+        if (res.status === 404) {
+          errorMessage = 'Usuário não encontrado. Verifique o e-mail digitado.';
+        } else if (res.status === 401) {
+          errorMessage = 'Senha incorreta. Tente novamente.';
+        } else if (data.error) {
+          errorMessage = data.error;
+        }
+        
+        return { success: false, error: errorMessage };
+      }
+      
       const data = await res.json();
-      if (res.ok && data.success) {
+      if (data.success) {
         setUser(data.user);
         localStorage.setItem('user', JSON.stringify(data.user));
         return { success: true };
       } else {
-        return { success: false, error: data.error || 'Credenciais inválidas' };
+        return { success: false, error: data.error || 'Erro inesperado no login' };
       }
     } catch (error) {
-      return { success: false, error: 'Erro ao fazer login' };
+      console.error('Login error:', error);
+      return { success: false, error: 'Erro de conexão. Verifique se o servidor está rodando.' };
     }
   };
 
@@ -51,16 +68,33 @@ export const AuthProvider = ({ children }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: name, email, password })
       });
+      
+      if (!res.ok) {
+        const data = await res.json();
+        let errorMessage = 'Erro ao criar conta';
+        
+        if (res.status === 409) {
+          errorMessage = 'Este e-mail ou nome de usuário já está sendo usado.';
+        } else if (res.status === 400) {
+          errorMessage = 'Dados inválidos. Verifique as informações fornecidas.';
+        } else if (data.error) {
+          errorMessage = data.error;
+        }
+        
+        return { success: false, error: errorMessage };
+      }
+      
       const data = await res.json();
-      if (res.ok && data.success) {
+      if (data.success) {
         setUser(data.user);
         localStorage.setItem('user', JSON.stringify(data.user));
-        return { success: true };
+        return { success: true, message: 'Conta criada com sucesso!' };
       } else {
-        return { success: false, error: data.error || 'Erro ao criar conta' };
+        return { success: false, error: data.error || 'Erro inesperado ao criar conta' };
       }
     } catch (error) {
-      return { success: false, error: 'Erro ao criar conta' };
+      console.error('Register error:', error);
+      return { success: false, error: 'Erro de conexão. Verifique se o servidor está rodando.' };
     }
   };
 
