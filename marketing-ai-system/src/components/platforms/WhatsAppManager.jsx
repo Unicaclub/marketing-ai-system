@@ -21,6 +21,102 @@ import {
 
 const WhatsAppManager = () => {
   const [activeTab, setActiveTab] = useState('overview');
+  const [whatsappToken, setWhatsappToken] = useState('');
+  const [whatsappNumber, setWhatsappNumber] = useState('');
+  const [webhookUrl, setWebhookUrl] = useState('');
+  const [verificationToken, setVerificationToken] = useState('');
+  const [autoReply, setAutoReply] = useState(true);
+  const [continuousLearning, setContinuousLearning] = useState(true);
+  const API_URL = import.meta.env.VITE_API_URL || '';
+
+  // Função para salvar configurações
+  const handleSaveSettings = async () => {
+    try {
+      const payload = {
+        whatsapp_token: whatsappToken,
+        whatsapp_number: whatsappNumber,
+        webhook_url: webhookUrl,
+        verification_token: verificationToken,
+        auto_reply: autoReply,
+        continuous_learning: continuousLearning
+      };
+      const res = await fetch(`${API_URL}/platforms/whatsapp/settings`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        alert('Configurações salvas com sucesso!');
+      } else {
+        alert('Erro ao salvar configurações.');
+      }
+    } catch (err) {
+      alert('Erro ao conectar com o backend: ' + err.message);
+    }
+  };
+
+  // Function to export WhatsApp data
+  const handleExportData = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/platforms/whatsapp/export`, {
+        method: 'GET'
+      });
+      
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `whatsapp-data-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } else {
+        throw new Error('Erro ao exportar dados do servidor');
+      }
+    } catch (error) {
+      console.error('Error exporting WhatsApp data:', error);
+      alert('Erro ao exportar dados do WhatsApp');
+    }
+  };
+
+  // Function to handle new message creation
+  const handleNewMessage = async () => {
+    const phoneNumber = prompt('Digite o número do destinatário (com código do país):');
+    if (phoneNumber) {
+      const message = prompt('Digite a mensagem:');
+      if (message) {
+        try {
+          const response = await fetch(`${API_URL}/api/platforms/whatsapp/send-message`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              phone_number: phoneNumber,
+              message: message
+            })
+          });
+          
+          if (response.ok) {
+            const result = await response.json();
+            alert(`Mensagem enviada com sucesso!\nPara: ${result.phone_number}\nStatus: ${result.status}`);
+          } else {
+            throw new Error('Erro ao enviar mensagem');
+          }
+        } catch (error) {
+          console.error('Error sending message:', error);
+          alert('Erro ao enviar mensagem via WhatsApp');
+        }
+      }
+    }
+  };
+
+  // Function to handle filters
+  const handleFilter = () => {
+    alert('Modal de filtros será implementado em breve.\n\nFiltros disponíveis:\n- Status da conversa\n- Período\n- Campanha\n- Agente IA');
+  };
   const [conversations, setConversations] = useState([]);
   const [metrics, setMetrics] = useState({
     totalMessages: 1247,
@@ -290,7 +386,10 @@ const WhatsAppManager = () => {
               <option value="ai">Gerenciadas por IA</option>
               <option value="manual">Manuais</option>
             </select>
-            <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2">
+            <button 
+              onClick={() => handleFilter()}
+              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
+            >
               <Filter className="w-4 h-4" />
               Filtros
             </button>
@@ -450,6 +549,8 @@ const WhatsAppManager = () => {
                   type="password"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                   placeholder="Insira seu token da API"
+                  value={whatsappToken}
+                  onChange={e => setWhatsappToken(e.target.value)}
                 />
               </div>
               <div>
@@ -460,6 +561,8 @@ const WhatsAppManager = () => {
                   type="text"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                   placeholder="+55 11 99999-9999"
+                  value={whatsappNumber}
+                  onChange={e => setWhatsappNumber(e.target.value)}
                 />
               </div>
             </div>
@@ -477,6 +580,8 @@ const WhatsAppManager = () => {
                   type="url"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                   placeholder="https://sua-api.com/webhook"
+                  value={webhookUrl}
+                  onChange={e => setWebhookUrl(e.target.value)}
                 />
               </div>
               <div>
@@ -487,6 +592,8 @@ const WhatsAppManager = () => {
                   type="text"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                   placeholder="Token de verificação"
+                  value={verificationToken}
+                  onChange={e => setVerificationToken(e.target.value)}
                 />
               </div>
             </div>
@@ -502,7 +609,12 @@ const WhatsAppManager = () => {
                   <p className="text-sm text-gray-500">Permitir que a IA responda automaticamente</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" className="sr-only peer" defaultChecked />
+                  <input
+                    type="checkbox"
+                    className="sr-only peer"
+                    checked={autoReply}
+                    onChange={e => setAutoReply(e.target.checked)}
+                  />
                   <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                 </label>
               </div>
@@ -512,7 +624,12 @@ const WhatsAppManager = () => {
                   <p className="text-sm text-gray-500">IA aprende com as interações</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" className="sr-only peer" defaultChecked />
+                  <input
+                    type="checkbox"
+                    className="sr-only peer"
+                    checked={continuousLearning}
+                    onChange={e => setContinuousLearning(e.target.checked)}
+                  />
                   <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                 </label>
               </div>
@@ -521,7 +638,10 @@ const WhatsAppManager = () => {
 
           {/* Save Button */}
           <div className="flex justify-end">
-            <button className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <button
+              className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors"
+              onClick={handleSaveSettings}
+            >
               Salvar Configurações
             </button>
           </div>
@@ -544,11 +664,17 @@ const WhatsAppManager = () => {
           </div>
         </div>
         <div className="mt-4 sm:mt-0 flex gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+          <button 
+            onClick={() => handleExportData()}
+            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          >
             <Download className="w-4 h-4" />
             Exportar
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors">
+          <button 
+            onClick={() => handleNewMessage()}
+            className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
             <Send className="w-4 h-4" />
             Nova Mensagem
           </button>

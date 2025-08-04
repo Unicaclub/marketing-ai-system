@@ -104,6 +104,66 @@ const Chat = () => {
     });
   };
 
+  // Function to handle file upload
+  const handleFileUpload = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.pdf,.doc,.docx,.txt';
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        console.log('File selected:', file.name);
+        alert(`Arquivo selecionado: ${file.name}\nFuncionalidade de upload será implementada em breve.`);
+      }
+    };
+    input.click();
+  };
+
+  // Function to handle image upload
+  const handleImageUpload = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          console.log('Image selected:', file.name);
+          alert(`Imagem selecionada: ${file.name}\nFuncionalidade de upload será implementada em breve.`);
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+    input.click();
+  };
+
+  // Function to handle voice recording
+  const handleVoiceRecording = async () => {
+    try {
+      if (!isRecording) {
+        // Start recording
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        console.log('Started recording');
+        setIsRecording(true);
+        
+        // Stop recording after 5 seconds for demo
+        setTimeout(() => {
+          setIsRecording(false);
+          stream.getTracks().forEach(track => track.stop());
+          alert('Gravação finalizada! Funcionalidade completa será implementada em breve.');
+        }, 5000);
+      } else {
+        // Stop recording
+        setIsRecording(false);
+        console.log('Stopped recording');
+      }
+    } catch (error) {
+      console.error('Error accessing microphone:', error);
+      alert('Erro ao acessar o microfone. Verifique as permissões.');
+    }
+  };
+
   return (
     <div className="flex flex-col h-[calc(100vh-12rem)]">
       {/* Chat Header */}
@@ -207,16 +267,16 @@ const Chat = () => {
         <div className="flex items-end gap-3">
           <div className="flex gap-2">
             <button
+              onClick={() => handleFileUpload()}
               className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-              title="Anexar arquivo (em breve)"
-              disabled
+              title="Anexar arquivo"
             >
               <Paperclip className="w-5 h-5" />
             </button>
             <button
+              onClick={() => handleImageUpload()}
               className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-              title="Enviar imagem (em breve)"
-              disabled
+              title="Enviar imagem"
             >
               <Image className="w-5 h-5" />
             </button>
@@ -236,7 +296,7 @@ const Chat = () => {
           
           <div className="flex gap-2">
             <button
-              onClick={() => setIsRecording(!isRecording)}
+              onClick={() => handleVoiceRecording()}
               className={`p-3 rounded-xl transition-colors ${
                 isRecording 
                   ? 'bg-red-500 text-white' 

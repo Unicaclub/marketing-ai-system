@@ -25,6 +25,121 @@ import {
 
 const FacebookManager = () => {
   const [activeTab, setActiveTab] = useState('overview');
+  const [adAccountId, setAdAccountId] = useState('');
+  const [pixelId, setPixelId] = useState('');
+  const [autoOptimization, setAutoOptimization] = useState(true);
+  const [pauseLowCTR, setPauseLowCTR] = useState(false);
+  const [reportFrequency, setReportFrequency] = useState('daily');
+  const [reportEmail, setReportEmail] = useState('');
+  const API_URL = import.meta.env.VITE_API_URL || '';
+
+  const handleSaveSettings = async () => {
+    try {
+      const payload = {
+        ad_account_id: adAccountId,
+        pixel_id: pixelId,
+        auto_optimization: autoOptimization,
+        pause_low_ctr: pauseLowCTR,
+        report_frequency: reportFrequency,
+        report_email: reportEmail
+      };
+      const res = await fetch(`${API_URL}/platforms/facebook/settings`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        alert('Configurações salvas com sucesso!');
+      } else {
+        alert('Erro ao salvar configurações.');
+      }
+    } catch (err) {
+      alert('Erro ao conectar com o backend: ' + err.message);
+    }
+  };
+
+  // Function to import Facebook data
+  const handleImportData = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.csv,.json,.xlsx';
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        console.log('File selected for import:', file.name);
+        alert(`Arquivo selecionado: ${file.name}\nFuncionalidade de importação será implementada em breve.`);
+      }
+    };
+    input.click();
+  };
+
+  // Function to create new Facebook campaign
+  const handleNewCampaign = async () => {
+    const campaignName = prompt('Digite o nome da campanha:');
+    if (campaignName) {
+      const objective = prompt('Digite o objetivo (conversions, brand_awareness, traffic):') || 'conversions';
+      const budget = prompt('Digite o orçamento diário (R$):') || '100';
+      
+      try {
+        const response = await fetch(`${API_URL}/api/platforms/facebook/campaigns`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            name: campaignName,
+            objective: objective,
+            budget: parseFloat(budget)
+          })
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          alert(`Campanha criada com sucesso!\nID: ${result.campaign.id}\nNome: ${result.campaign.name}`);
+        } else {
+          throw new Error('Erro ao criar campanha');
+        }
+      } catch (error) {
+        console.error('Error creating campaign:', error);
+        alert('Erro ao criar campanha no Facebook');
+      }
+    }
+  };
+
+  // Function to create new Facebook post
+  const handleNewPost = async () => {
+    const content = prompt('Digite o conteúdo do post:');
+    if (content) {
+      try {
+        const response = await fetch(`${API_URL}/api/platforms/facebook/posts`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            content: content,
+            media: [], // In a real app, this would handle file uploads
+            scheduled_time: null // Immediate posting
+          })
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          alert(`Post criado com sucesso!\nID: ${result.post.id}\nStatus: ${result.post.status}`);
+        } else {
+          throw new Error('Erro ao criar post');
+        }
+      } catch (error) {
+        console.error('Error creating post:', error);
+        alert('Erro ao criar post no Facebook');
+      }
+    }
+  };
+
+  // Function to handle filters
+  const handleFilter = () => {
+    alert('Modal de filtros será implementado.\n\nFiltros disponíveis:\n- Status do anúncio\n- Período\n- Orçamento\n- Performance');
+  };
 
   const metrics = {
     pageFollowers: 28450,
@@ -296,7 +411,10 @@ const FacebookManager = () => {
       <div className="bg-white rounded-xl border border-gray-200 p-6">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-gray-900">Posts Recentes da Página</h3>
-          <button className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors">
+          <button 
+            onClick={() => handleNewPost()}
+            className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
             <Plus className="w-4 h-4" />
             Novo Post
           </button>
@@ -362,7 +480,10 @@ const FacebookManager = () => {
             </select>
           </div>
           <div className="flex gap-3">
-            <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+            <button 
+              onClick={() => handleFilter()}
+              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            >
               <Filter className="w-4 h-4" />
               Filtros
             </button>
@@ -609,6 +730,8 @@ const FacebookManager = () => {
                   type="text"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                   placeholder="act_1234567890"
+                  value={adAccountId}
+                  onChange={e => setAdAccountId(e.target.value)}
                 />
               </div>
               <div>
@@ -619,6 +742,8 @@ const FacebookManager = () => {
                   type="text"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                   placeholder="ID do pixel de conversão"
+                  value={pixelId}
+                  onChange={e => setPixelId(e.target.value)}
                 />
               </div>
             </div>
@@ -634,7 +759,12 @@ const FacebookManager = () => {
                   <p className="text-sm text-gray-500">Ajustar lances automaticamente para melhor performance</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" className="sr-only peer" defaultChecked />
+                  <input
+                    type="checkbox"
+                    className="sr-only peer"
+                    checked={autoOptimization}
+                    onChange={e => setAutoOptimization(e.target.checked)}
+                  />
                   <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                 </label>
               </div>
@@ -644,7 +774,12 @@ const FacebookManager = () => {
                   <p className="text-sm text-gray-500">Pausar automaticamente anúncios com CTR abaixo de 1%</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" className="sr-only peer" />
+                  <input
+                    type="checkbox"
+                    className="sr-only peer"
+                    checked={pauseLowCTR}
+                    onChange={e => setPauseLowCTR(e.target.checked)}
+                  />
                   <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                 </label>
               </div>
@@ -659,7 +794,11 @@ const FacebookManager = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Frequência dos Relatórios
                 </label>
-                <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                <select
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  value={reportFrequency}
+                  onChange={e => setReportFrequency(e.target.value)}
+                >
                   <option value="daily">Diário</option>
                   <option value="weekly">Semanal</option>
                   <option value="monthly">Mensal</option>
@@ -673,6 +812,8 @@ const FacebookManager = () => {
                   type="email"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                   placeholder="seu@email.com"
+                  value={reportEmail}
+                  onChange={e => setReportEmail(e.target.value)}
                 />
               </div>
             </div>
@@ -680,7 +821,10 @@ const FacebookManager = () => {
 
           {/* Botão Salvar */}
           <div className="flex justify-end">
-            <button className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <button
+              className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors"
+              onClick={handleSaveSettings}
+            >
               Salvar Configurações
             </button>
           </div>
@@ -703,11 +847,17 @@ const FacebookManager = () => {
           </div>
         </div>
         <div className="mt-4 sm:mt-0 flex gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+          <button 
+            onClick={() => handleImportData()}
+            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          >
             <Upload className="w-4 h-4" />
             Importar
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors">
+          <button 
+            onClick={() => handleNewCampaign()}
+            className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
             <Plus className="w-4 h-4" />
             Nova Campanha
           </button>

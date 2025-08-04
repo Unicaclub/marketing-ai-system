@@ -24,6 +24,121 @@ import {
 
 const InstagramManager = () => {
   const [activeTab, setActiveTab] = useState('overview');
+  const [instagramSettings, setInstagramSettings] = useState({
+    username: '',
+    accessToken: '',
+    autoPost: true,
+    autoStories: false,
+    defaultHashtags: ''
+  });
+
+  // Function to handle file upload
+  const handleUpload = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*,video/*';
+    input.multiple = true;
+    input.onchange = (e) => {
+      const files = Array.from(e.target.files);
+      if (files.length > 0) {
+        console.log('Files selected:', files.map(f => f.name));
+        alert(`${files.length} arquivo(s) selecionado(s).\nFuncionalidade de upload será implementada em breve.`);
+      }
+    };
+    input.click();
+  };
+
+  // Function to create new Instagram post
+  const handleNewPost = async () => {
+    const caption = prompt('Digite a legenda do post:');
+    if (caption) {
+      const hashtags = prompt('Digite as hashtags (separadas por espaço):') || '';
+      
+      try {
+        const API_URL = import.meta.env.VITE_API_URL || '';
+        const response = await fetch(`${API_URL}/api/platforms/instagram/posts`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            caption: caption,
+            hashtags: hashtags.split(' ').filter(h => h.length > 0),
+            media: [], // In a real app, this would handle file uploads
+            location: null
+          })
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          alert(`Post do Instagram criado com sucesso!\nID: ${result.post.id}\nStatus: ${result.post.status}`);
+        } else {
+          throw new Error('Erro ao criar post');
+        }
+      } catch (error) {
+        console.error('Error creating Instagram post:', error);
+        alert('Erro ao criar post no Instagram');
+      }
+    }
+  };
+
+  // Function to create new Instagram story
+  const handleNewStory = async () => {
+    const textOverlay = prompt('Digite o texto do story (opcional):') || '';
+    
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || '';
+      const response = await fetch(`${API_URL}/api/platforms/instagram/stories`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          text_overlay: textOverlay,
+          media: [], // In a real app, this would handle file uploads
+          stickers: []
+        })
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        alert(`Story do Instagram criado com sucesso!\nID: ${result.story.id}\nStatus: ${result.story.status}`);
+      } else {
+        throw new Error('Erro ao criar story');
+      }
+    } catch (error) {
+      console.error('Error creating Instagram story:', error);
+      alert('Erro ao criar story no Instagram');
+    }
+  };
+
+  // Function to schedule posts
+  const handleSchedule = () => {
+    alert('Calendário de agenda será aberto.\n\nRecursos:\n- Visualização mensal\n- Agendamento de posts\n- Melhores horários\n- Fila de publicação');
+  };
+
+  // Function to save Instagram settings
+  const handleSaveInstagramSettings = async () => {
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || '';
+      const response = await fetch(`${API_URL}/api/platforms/instagram/settings`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(instagramSettings)
+      });
+      
+      if (response.ok) {
+        alert('Configurações do Instagram salvas com sucesso!');
+      } else {
+        throw new Error('Erro ao salvar configurações');
+      }
+    } catch (error) {
+      console.error('Error saving Instagram settings:', error);
+      alert('Erro ao salvar configurações do Instagram');
+    }
+  };
 
   const metrics = {
     followers: 15420,
@@ -307,7 +422,10 @@ const InstagramManager = () => {
       <div className="bg-white rounded-xl border border-gray-200 p-6">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-gray-900">Stories Recentes</h3>
-          <button className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors">
+          <button 
+            onClick={() => handleNewStory()}
+            className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
             <Plus className="w-4 h-4" />
             Novo Story
           </button>
@@ -366,11 +484,17 @@ const InstagramManager = () => {
             </select>
           </div>
           <div className="flex gap-3">
-            <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+            <button 
+              onClick={() => handleSchedule()}
+              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            >
               <Calendar className="w-4 h-4" />
               Agendar
             </button>
-            <button className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <button 
+              onClick={() => handleNewPost()}
+              className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
               <Plus className="w-4 h-4" />
               Novo Post
             </button>
@@ -628,7 +752,10 @@ const InstagramManager = () => {
 
           {/* Botão Salvar */}
           <div className="flex justify-end">
-            <button className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <button 
+              onClick={() => handleSaveInstagramSettings()}
+              className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
               Salvar Configurações
             </button>
           </div>
@@ -651,11 +778,17 @@ const InstagramManager = () => {
           </div>
         </div>
         <div className="mt-4 sm:mt-0 flex gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+          <button 
+            onClick={() => handleUpload()}
+            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          >
             <Upload className="w-4 h-4" />
             Upload
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors">
+          <button 
+            onClick={() => handleNewPost()}
+            className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
             <Plus className="w-4 h-4" />
             Novo Post
           </button>

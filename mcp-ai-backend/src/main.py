@@ -19,6 +19,9 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 from config import config
 
 def create_app(config_name=None):
+    # Registrar blueprint de configurações do Facebook
+    from src.routes.facebook_settings import facebook_settings_bp
+    app.register_blueprint(facebook_settings_bp)
     """Factory function para criar a aplicação Flask"""
     # Sempre usar produção por padrão
     if config_name is None:
@@ -55,6 +58,9 @@ def create_app(config_name=None):
     # Registrar blueprint de configurações
     from src.routes.settings import settings_bp
     app.register_blueprint(settings_bp)
+    # Registrar blueprint de configurações do WhatsApp
+    from src.routes.whatsapp_settings import whatsapp_settings_bp
+    app.register_blueprint(whatsapp_settings_bp)
     # Registrar blueprint de product_database
     from src.routes.product_database import product_db_bp
     app.register_blueprint(product_db_bp, url_prefix='/api')
@@ -77,6 +83,14 @@ def create_app(config_name=None):
     # Registrar blueprint de interações de vendas
     from src.routes.sales_interaction import sales_interaction_bp
     app.register_blueprint(sales_interaction_bp, url_prefix='/api')
+
+    # Registrar blueprint de configurações do Instagram
+    from src.routes.instagram_settings import instagram_settings_bp
+    app.register_blueprint(instagram_settings_bp)
+    
+    # Registrar blueprint de gerenciamento de plataformas
+    from src.routes.platform_management import platform_management_bp
+    app.register_blueprint(platform_management_bp)
 
     return app
 

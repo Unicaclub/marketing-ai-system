@@ -106,7 +106,10 @@ const LandingPage = () => {
                 Começar Gratuitamente
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
-              <button className="flex items-center gap-2 text-primary hover:text-blue-700 transition-colors">
+              <button 
+                className="flex items-center gap-2 text-primary hover:text-blue-700 transition-colors"
+                onClick={() => window.open('https://www.youtube.com/watch?v=demo', '_blank')}
+              >
                 <Play className="w-5 h-5" />
                 Ver Demonstração
               </button>

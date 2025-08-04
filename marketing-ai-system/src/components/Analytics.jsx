@@ -18,6 +18,39 @@ const Analytics = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('30d');
   const [selectedMetric, setSelectedMetric] = useState('all');
 
+  // Function to export analytics data
+  const handleExportData = async () => {
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || '';
+      const response = await fetch(`${API_URL}/api/analytics/export?platform=all&period=${selectedPeriod}`, {
+        method: 'GET'
+      });
+      
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `analytics-${selectedPeriod}-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } else {
+        throw new Error('Erro ao exportar dados do servidor');
+      }
+    } catch (error) {
+      console.error('Error exporting data:', error);
+      alert('Erro ao exportar dados');
+    }
+  };
+
+  // Function to handle filter functionality
+  const handleFilterData = () => {
+    // This could open a modal or show filter options
+    alert('Funcionalidade de filtros será implementada em breve');
+  };
+
   const metrics = {
     totalReach: { value: 45230, change: 23, positive: true },
     totalConversions: { value: 1847, change: 18, positive: true },
@@ -91,7 +124,10 @@ const Analytics = () => {
             <option value="90d">Últimos 90 dias</option>
             <option value="1y">Último ano</option>
           </select>
-          <button className="btn-primary-gradient text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2">
+          <button 
+            onClick={() => handleExportData()}
+            className="btn-primary-gradient text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2"
+          >
             <Download className="w-4 h-4" />
             Exportar
           </button>
@@ -216,7 +252,10 @@ const Analytics = () => {
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold text-gray-900">Performance das Campanhas</h3>
-            <button className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-50">
+            <button 
+              onClick={() => handleFilterData()}
+              className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-50"
+            >
               <Filter className="w-4 h-4" />
               Filtrar
             </button>
