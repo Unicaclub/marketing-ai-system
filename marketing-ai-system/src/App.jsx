@@ -17,6 +17,10 @@ import AdminPanel from './components/AdminPanel';
 import WhatsAppManager from './components/platforms/WhatsAppManager';
 import InstagramManager from './components/platforms/InstagramManager';
 import FacebookManager from './components/platforms/FacebookManager';
+import AutomationBuilder from './components/AutomationBuilder';
+import TemplateManager from './components/TemplateManager';
+import ContactSegmentation from './components/ContactSegmentation';
+import AutomationAnalytics from './components/AutomationAnalytics';
 import ProtectedRoute from './components/ProtectedRoute';
 import PublicRoute from './components/PublicRoute';
 
@@ -89,6 +93,28 @@ function App() {
             <Route path="/platforms/facebook" element={
               <ProtectedRoute>
                 <Layout><FacebookManager /></Layout>
+              </ProtectedRoute>
+            } />
+            
+            {/* Páginas de Automação */}
+            <Route path="/automation/builder" element={
+              <ProtectedRoute>
+                <Layout><AutomationBuilder /></Layout>
+              </ProtectedRoute>
+            } />
+            <Route path="/automation/templates" element={
+              <ProtectedRoute>
+                <Layout><TemplateManager /></Layout>
+              </ProtectedRoute>
+            } />
+            <Route path="/automation/contacts" element={
+              <ProtectedRoute>
+                <Layout><ContactSegmentation /></Layout>
+              </ProtectedRoute>
+            } />
+            <Route path="/automation/analytics" element={
+              <ProtectedRoute>
+                <Layout><AutomationAnalytics /></Layout>
               </ProtectedRoute>
             } />
           </Routes>

@@ -41,6 +41,12 @@ cd mcp-ai-backend && python migrate.py reset   # Reset database
 cd mcp-ai-backend && python migrate.py seed    # Seed with initial data
 cd mcp-ai-backend && python migrate.py check   # Check connection
 
+# Test functionality
+cd . && python test_functionality.py
+
+# Start queue processor (for automation delays and scheduling)
+cd mcp-ai-backend && python start_queue_processor.py
+
 # Run with production server (waitress)
 cd mcp-ai-backend && python -m waitress --host=0.0.0.0 --port=5000 src.main:app
 
@@ -58,11 +64,12 @@ cd mcp-ai-backend && gunicorn src.main:app
 - **API Communication**: Fetch API with `VITE_API_URL` environment variable
 
 ### Backend Structure
-- **Models**: SQLAlchemy models in `src/models/` (Campaign, MCPAgent, User, ProductDatabase, SalesInteraction, ZAPICredentials, UserAPIKey)
-- **Routes**: Blueprint-based routing in `src/routes/` organized by feature (campaign, mcp_agent, sales_agent, platform integrations)
-- **Services**: Business logic layer in `src/services/` for complex operations (MCP agent service, sales strategy service)
+- **Models**: SQLAlchemy models in `src/models/` (Campaign, MCPAgent, User, ProductDatabase, SalesInteraction, ZAPICredentials, UserAPIKey, Automation, Contact, Message, MessageTemplate, AutomationMetrics, QueuedMessage)
+- **Routes**: Blueprint-based routing in `src/routes/` organized by feature (campaign, mcp_agent, sales_agent, platform integrations, automation)
+- **Services**: Business logic layer in `src/services/` for complex operations (MCP agent service, sales strategy service, automation engine, queue processor)
 - **Database**: Flexible configuration in `config.py` supporting PostgreSQL (production), MySQL, and SQLite (development)
 - **Static Files**: Served from `src/static/` for production SPA deployment
+- **Queue System**: Background processing for delayed messages and scheduled automations
 
 ### Key Models
 - **MCPAgent**: AI agents with personality, sales approach, and performance metrics
@@ -70,6 +77,11 @@ cd mcp-ai-backend && gunicorn src.main:app
 - **SalesInteraction**: Customer interaction tracking with sentiment analysis and conversion probability
 - **ConversationFlow**: Predefined conversation paths for sales agents
 - **AgentKnowledge**: Knowledge base for AI agents (products, objections, scripts, FAQs)
+- **Automation**: Marketing automation workflows with triggers and actions
+- **Contact**: Customer contact management with tags, custom fields, and segmentation
+- **Message**: Message history and tracking across all platforms
+- **MessageTemplate**: Reusable message templates with dynamic variables
+- **QueuedMessage**: Scheduled messages for delayed sending
 
 ## Database Configuration
 
@@ -107,13 +119,41 @@ Environment variables for database connection:
 - Instagram Manager: Content and engagement tracking
 - Platform-specific configuration storage
 
+## Automation System Features
+
+### Implemented Features
+- **Marketing Automation Workflows**: Complete automation builder with visual interface
+- **Multi-trigger Support**: Keyword, schedule, and webhook-based triggers
+- **Advanced Actions**: Send messages, add/remove tags, update custom fields, delays
+- **Template System**: Reusable message templates with dynamic variables ({{name}}, {{phone}}, etc.)
+- **Contact Segmentation**: Advanced filtering by tags, behavior, interaction history
+- **Analytics Dashboard**: Performance metrics, conversion tracking, engagement analysis
+- **Queue System**: Background processing for delayed messages and scheduled campaigns
+- **Multi-platform Support**: WhatsApp, Telegram, Instagram integration ready
+
+### Queue Processor
+- Background service for processing scheduled messages and automations
+- Runs separately from main Flask app: `python start_queue_processor.py`
+- Handles delays, scheduling, and batch message processing
+- Automatic cleanup of old data and metrics calculation
+
+### API Endpoints
+- `/api/automations` - CRUD operations for automation workflows
+- `/api/contacts` - Contact management and segmentation
+- `/api/templates` - Message template management
+- `/api/messages` - Message history and sending
+- `/api/webhook/<platform>` - Multi-platform webhook receivers
+- `/api/contacts/segments` - Advanced contact segmentation
+- `/api/automations/<id>/analytics` - Performance analytics
+
 ## Development Notes
 
 - Frontend uses package manager: `pnpm@10.4.1`
 - Backend serves static files from `src/static/` for production deployment
 - CORS enabled for all origins in development (`origins="*"`)
-- Database migrations handled via custom `migrate.py` script (not Alembic)
+- Database migrations handled via custom `migrate.py` script and Alembic (both available)
 - Production deployment configured for Railway with Procfile (`web: gunicorn src.main:app`)
 - Backend uses Waitress WSGI server for development, Gunicorn for production
 - Frontend build outputs to `dist/` directory
 - Path aliasing configured with `@` pointing to `src/` directory
+- Queue processor should run as separate process in production for automation features

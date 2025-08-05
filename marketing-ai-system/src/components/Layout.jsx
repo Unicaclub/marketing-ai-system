@@ -16,7 +16,11 @@ import {
   Instagram,
   Facebook,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Workflow,
+  FileText,
+  Users,
+  TrendingUp
 } from 'lucide-react';
 
 const Layout = ({ children }) => {
@@ -69,6 +73,13 @@ const Layout = ({ children }) => {
     { name: 'WhatsApp', href: '/platforms/whatsapp', icon: MessageSquare },
     { name: 'Instagram', href: '/platforms/instagram', icon: Instagram },
     { name: 'Facebook', href: '/platforms/facebook', icon: Facebook },
+  ];
+
+  const automationNavigation = [
+    { name: 'Criar Automação', href: '/automation/builder', icon: Workflow },
+    { name: 'Templates', href: '/automation/templates', icon: FileText },
+    { name: 'Contatos', href: '/automation/contacts', icon: Users },
+    { name: 'Analytics', href: '/automation/analytics', icon: TrendingUp },
   ];
 
   const settingsNavigation = [
@@ -181,6 +192,20 @@ const Layout = ({ children }) => {
           {/* Main Navigation */}
           <div className="space-y-1">
             {navigation.map((item) => renderNavItem(item, sidebarCollapsed && !isMobile))}
+          </div>
+
+          {/* Automation Section */}
+          <div className="mt-8">
+            {(!sidebarCollapsed || isMobile) && (
+              <div className="px-3 mb-2">
+                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Automação
+                </h3>
+              </div>
+            )}
+            <div className="space-y-1">
+              {automationNavigation.map((item) => renderNavItem(item, sidebarCollapsed && !isMobile))}
+            </div>
           </div>
 
           {/* Platforms Section */}

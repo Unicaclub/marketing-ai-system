@@ -91,6 +91,10 @@ def create_app(config_name=None):
     # Registrar blueprint de gerenciamento de plataformas
     from src.routes.platform_management import platform_management_bp
     app.register_blueprint(platform_management_bp)
+    
+    # Registrar blueprint de automações
+    from src.routes.automation import automation_bp
+    app.register_blueprint(automation_bp)
 
     return app
 
@@ -99,6 +103,7 @@ app = create_app()
 # Import all models to ensure they're created
 from src.models.campaign import Campaign, ProductDatabase, SalesInteraction
 from src.models.mcp_agent import MCPAgent, AgentKnowledge, ConversationFlow
+from src.models.automation import Automation, Contact, Message, MessageTemplate, AutomationMetrics, QueuedMessage
 
 with app.app_context():
     db.create_all()
