@@ -92,6 +92,31 @@ def create_app(config_name=None):
     from src.routes.platform_management import platform_management_bp
     app.register_blueprint(platform_management_bp)
 
+    # Registrar blueprints do WhatsAPI
+    from src.routes.whatsapi_sessions import whatsapi_sessions_bp
+    app.register_blueprint(whatsapi_sessions_bp)
+    
+    from src.routes.whatsapi_chats import whatsapi_chats_bp
+    app.register_blueprint(whatsapi_chats_bp)
+    
+    from src.routes.whatsapi_contacts import whatsapi_contacts_bp
+    app.register_blueprint(whatsapi_contacts_bp)
+    
+    from src.routes.whatsapi_profile import whatsapi_profile_bp
+    app.register_blueprint(whatsapi_profile_bp)
+    
+    from src.routes.whatsapi_messages import whatsapi_messages_bp
+    app.register_blueprint(whatsapi_messages_bp)
+    
+    from src.routes.whatsapi_groups import whatsapi_groups_bp
+    app.register_blueprint(whatsapi_groups_bp)
+    
+    from src.routes.whatsapi_business import whatsapi_business_bp
+    app.register_blueprint(whatsapi_business_bp)
+    
+    from src.routes.whatsapi_misc import whatsapi_misc_bp
+    app.register_blueprint(whatsapi_misc_bp)
+
     return app
 
 app = create_app()
