@@ -27,7 +27,7 @@ const WhatsAppAutomation = () => {
       return;
     }
     try {
-      const res = await fetch(`${API_URL}/whatsapp/session`, {
+      const res = await fetch(`${API_URL}/wpp/session/start`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone: sessionPhone })
