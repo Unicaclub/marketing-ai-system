@@ -40,6 +40,8 @@ def create_app(config_name=None):
     db.init_app(app)
 
     # Registrar blueprints
+    from src.routes.wpp import wpp_bp
+    app.register_blueprint(wpp_bp, url_prefix='/api')
     app.register_blueprint(user_bp, url_prefix='/api')
     app.register_blueprint(mcp_agent_bp, url_prefix='/api/mcp')
     app.register_blueprint(sales_strategy_bp, url_prefix='/api/sales')
