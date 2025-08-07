@@ -175,6 +175,7 @@ const Layout = ({ children }) => {
             </button>
           )}
         </div>
+import WhatsAppAutomation from './platforms/WhatsAppAutomation';
 
         {/* Navigation */}
         <nav className="mt-6 px-3 overflow-y-auto max-h-[calc(100vh-120px)]">
@@ -194,6 +195,10 @@ const Layout = ({ children }) => {
             )}
             <div className="space-y-1">
               {platformNavigation.map((item) => renderNavItem(item, sidebarCollapsed && !isMobile))}
+              <Link to="/platforms/WhatsApp/automation" className={`relative flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors group`}>
+                <MessageSquare className="w-5 h-5 mr-3" />
+                <span className="nav-text">Automação do WhatsApp</span>
+              </Link>
             </div>
           </div>
 
