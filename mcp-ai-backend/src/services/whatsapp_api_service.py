@@ -1,36 +1,61 @@
 import requests
 
-WHATSAPI_URL = "https://whatsappi-production-5412.up.railway.app"
+WHATSAPI_BASE_URL = "https://whatsapi-production-5412.up.railway.app/wpp"
 
 def start_session(phone):
-    return requests.post(f"{WHATSAPI_URL}/api/start-session", json={"phone": phone}).json()
+    url = f"{WHATSAPI_BASE_URL}/session/start"
+    payload = {"phone": phone}
+    response = requests.post(url, json=payload)
+    return response.json()
 
 def list_sessions():
-    return requests.get(f"{WHATSAPI_URL}/api/list-sessions").json()
+    url = f"{WHATSAPI_BASE_URL}/session/list"
+    response = requests.get(url)
+    return response.json()
 
-def logout_session(session_id):
-    return requests.post(f"{WHATSAPI_URL}/api/logout-session", json={"session": session_id}).json()
+def remove_session(session_name):
+    url = f"{WHATSAPI_BASE_URL}/session/{session_name}"
+    response = requests.delete(url)
+    return response.json()
 
-def send_message(session, phone, message):
-    payload = {"session": session, "phone": phone, "message": message}
-    return requests.post(f"{WHATSAPI_URL}/api/send-message", json=payload).json()
+def send_text(session, phone, message):
+    url = f"{WHATSAPI_BASE_URL}/send-text"
+    payload = {"session": session, "phone": phone, "text": message}
+    response = requests.post(url, json=payload)
+    return response.json()
 
-def send_image(session, phone, image_url, caption=""):
-    payload = {"session": session, "phone": phone, "image": image_url, "caption": caption}
-    return requests.post(f"{WHATSAPI_URL}/api/send-image", json=payload).json()
+def send_image(session, phone, image, caption=""):
+    url = f"{WHATSAPI_BASE_URL}/send-image"
+    payload = {"session": session, "phone": phone, "image": image, "caption": caption}
+    response = requests.post(url, json=payload)
+    return response.json()
 
-def send_file(session, phone, file_url, filename):
-    payload = {"session": session, "phone": phone, "file": file_url, "filename": filename}
-    return requests.post(f"{WHATSAPI_URL}/api/send-file", json=payload).json()
+def send_file(session, phone, file, filename):
+    url = f"{WHATSAPI_BASE_URL}/send-file"
+    payload = {"session": session, "phone": phone, "file": file, "filename": filename}
+    response = requests.post(url, json=payload)
+    return response.json()
 
-def send_sticker(session, phone, sticker_url):
-    payload = {"session": session, "phone": phone, "sticker": sticker_url}
-    return requests.post(f"{WHATSAPI_URL}/api/send-sticker", json=payload).json()
+def send_sticker(session, phone, sticker):
+    url = f"{WHATSAPI_BASE_URL}/send-sticker"
+    payload = {"session": session, "phone": phone, "sticker": sticker}
+    response = requests.post(url, json=payload)
+    return response.json()
 
 def send_contact(session, phone, contact):
+    url = f"{WHATSAPI_BASE_URL}/send-contact"
     payload = {"session": session, "phone": phone, "contact": contact}
-    return requests.post(f"{WHATSAPI_URL}/api/send-contact", json=payload).json()
+    response = requests.post(url, json=payload)
+    return response.json()
 
 def send_location(session, phone, latitude, longitude, description=""):
-    payload = {"session": session, "phone": phone, "latitude": latitude, "longitude": longitude, "description": description}
-    return requests.post(f"{WHATSAPI_URL}/api/send-location", json=payload).json()
+    url = f"{WHATSAPI_BASE_URL}/send-location"
+    payload = {
+        "session": session,
+        "phone": phone,
+        "latitude": latitude,
+        "longitude": longitude,
+        "description": description
+    }
+    response = requests.post(url, json=payload)
+    return response.json()
