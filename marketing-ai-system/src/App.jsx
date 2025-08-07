@@ -15,6 +15,7 @@ import Chat from './components/Chat';
 import Layout from './components/Layout';
 import AdminPanel from './components/AdminPanel';
 import WhatsAppManager from './components/platforms/WhatsAppManager';
+import WhatsAppAutomation from './components/platforms/WhatsAppAutomation';
 import InstagramManager from './components/platforms/InstagramManager';
 import FacebookManager from './components/platforms/FacebookManager';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -79,6 +80,11 @@ function App() {
             <Route path="/platforms/whatsapp" element={
               <ProtectedRoute>
                 <Layout><WhatsAppManager /></Layout>
+              </ProtectedRoute>
+            } />
+            <Route path="/platforms/whatsapp/automation" element={
+              <ProtectedRoute>
+                <Layout><WhatsAppAutomation /></Layout>
               </ProtectedRoute>
             } />
             <Route path="/platforms/instagram" element={
