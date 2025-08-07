@@ -16,7 +16,8 @@ import {
   Search,
   MoreVertical,
   Bot,
-  Zap
+  Zap,
+  MapPin
 } from 'lucide-react';
 
 const WhatsAppManager = () => {
