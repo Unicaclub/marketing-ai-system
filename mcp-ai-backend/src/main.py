@@ -58,6 +58,9 @@ def create_app(config_name=None):
     # Registrar blueprint de configurações do Facebook
     from src.routes.facebook_settings import facebook_settings_bp
     app.register_blueprint(facebook_settings_bp)
+    # Registrar blueprint de integração WhatsApp
+    from src.routes.whatsapp import whatsapp_bp
+    app.register_blueprint(whatsapp_bp)
     # Registrar blueprint de configurações do WhatsApp
     from src.routes.whatsapp_settings import whatsapp_settings_bp
     app.register_blueprint(whatsapp_settings_bp)

@@ -30,28 +30,174 @@ const WhatsAppManager = () => {
   const API_URL = import.meta.env.VITE_API_URL || '';
 
   // Função para salvar configurações
-  const handleSaveSettings = async () => {
+  // Função para iniciar sessão WhatsApp
+  const handleStartSession = async () => {
+    if (!whatsappNumber) {
+      alert('Informe o número do WhatsApp!');
+      return;
+    }
     try {
-      const payload = {
-        whatsapp_token: whatsappToken,
-        whatsapp_number: whatsappNumber,
-        webhook_url: webhookUrl,
-        verification_token: verificationToken,
-        auto_reply: autoReply,
-        continuous_learning: continuousLearning
-      };
-      const res = await fetch(`${API_URL}/platforms/whatsapp/settings`, {
+      const res = await fetch(`${API_URL}/whatsapp/session`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({ phone: whatsappNumber })
       });
+      const data = await res.json();
       if (res.ok) {
-        alert('Configurações salvas com sucesso!');
+        alert('Sessão iniciada! Detalhes: ' + JSON.stringify(data));
       } else {
-        alert('Erro ao salvar configurações.');
+        alert('Erro ao iniciar sessão: ' + (data.details || res.status));
       }
     } catch (err) {
       alert('Erro ao conectar com o backend: ' + err.message);
+    }
+  };
+
+  // Função para enviar mensagem de texto
+  const handleSendMessage = async () => {
+    const session = prompt('ID da sessão WhatsApp:');
+    const phone = prompt('Número do destinatário (com DDI):');
+    const message = prompt('Digite a mensagem:');
+    if (session && phone && message) {
+      try {
+        const res = await fetch(`${API_URL}/whatsapp/send`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ session, phone, message })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert('Mensagem enviada! Detalhes: ' + JSON.stringify(data));
+        } else {
+          alert('Erro ao enviar mensagem: ' + (data.details || res.status));
+        }
+      } catch (err) {
+        alert('Erro ao conectar com o backend: ' + err.message);
+      }
+    }
+  };
+
+  // Função para enviar imagem
+  const handleSendImage = async () => {
+    const session = prompt('ID da sessão WhatsApp:');
+    const phone = prompt('Número do destinatário (com DDI):');
+    const image = prompt('URL da imagem:');
+    const caption = prompt('Legenda (opcional):');
+    if (session && phone && image) {
+      try {
+        const res = await fetch(`${API_URL}/whatsapp/send-image`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ session, phone, image, caption })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert('Imagem enviada! Detalhes: ' + JSON.stringify(data));
+        } else {
+          alert('Erro ao enviar imagem: ' + (data.details || res.status));
+        }
+      } catch (err) {
+        alert('Erro ao conectar com o backend: ' + err.message);
+      }
+    }
+  };
+
+  // Função para enviar arquivo
+  const handleSendFile = async () => {
+    const session = prompt('ID da sessão WhatsApp:');
+    const phone = prompt('Número do destinatário (com DDI):');
+    const file = prompt('URL do arquivo:');
+    const filename = prompt('Nome do arquivo:');
+    if (session && phone && file && filename) {
+      try {
+        const res = await fetch(`${API_URL}/whatsapp/send-file`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ session, phone, file, filename })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert('Arquivo enviado! Detalhes: ' + JSON.stringify(data));
+        } else {
+          alert('Erro ao enviar arquivo: ' + (data.details || res.status));
+        }
+      } catch (err) {
+        alert('Erro ao conectar com o backend: ' + err.message);
+      }
+    }
+  };
+
+  // Função para enviar sticker
+  const handleSendSticker = async () => {
+    const session = prompt('ID da sessão WhatsApp:');
+    const phone = prompt('Número do destinatário (com DDI):');
+    const sticker = prompt('URL do sticker:');
+    if (session && phone && sticker) {
+      try {
+        const res = await fetch(`${API_URL}/whatsapp/send-sticker`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ session, phone, sticker })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert('Sticker enviado! Detalhes: ' + JSON.stringify(data));
+        } else {
+          alert('Erro ao enviar sticker: ' + (data.details || res.status));
+        }
+      } catch (err) {
+        alert('Erro ao conectar com o backend: ' + err.message);
+      }
+    }
+  };
+
+  // Função para enviar contato
+  const handleSendContact = async () => {
+    const session = prompt('ID da sessão WhatsApp:');
+    const phone = prompt('Número do destinatário (com DDI):');
+    const contact = prompt('Contato (JSON):');
+    if (session && phone && contact) {
+      try {
+        const res = await fetch(`${API_URL}/whatsapp/send-contact`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ session, phone, contact: JSON.parse(contact) })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert('Contato enviado! Detalhes: ' + JSON.stringify(data));
+        } else {
+          alert('Erro ao enviar contato: ' + (data.details || res.status));
+        }
+      } catch (err) {
+        alert('Erro ao conectar com o backend: ' + err.message);
+      }
+    }
+  };
+
+  // Função para enviar localização
+  const handleSendLocation = async () => {
+    const session = prompt('ID da sessão WhatsApp:');
+    const phone = prompt('Número do destinatário (com DDI):');
+    const latitude = prompt('Latitude:');
+    const longitude = prompt('Longitude:');
+    const description = prompt('Descrição (opcional):');
+    if (session && phone && latitude && longitude) {
+      try {
+        const res = await fetch(`${API_URL}/whatsapp/send-location`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ session, phone, latitude, longitude, description })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert('Localização enviada! Detalhes: ' + JSON.stringify(data));
+        } else {
+          alert('Erro ao enviar localização: ' + (data.details || res.status));
+        }
+      } catch (err) {
+        alert('Erro ao conectar com o backend: ' + err.message);
+      }
     }
   };
 
@@ -663,20 +809,55 @@ const WhatsAppManager = () => {
             <p className="text-gray-600">Gerencie suas campanhas e conversas no WhatsApp</p>
           </div>
         </div>
-        <div className="mt-4 sm:mt-0 flex gap-3">
-          <button 
-            onClick={() => handleExportData()}
-            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+        <div className="mt-4 sm:mt-0 flex flex-wrap gap-3">
+          <button
+            onClick={handleStartSession}
+            className="flex items-center gap-2 px-4 py-2 border border-green-400 text-green-700 rounded-lg hover:bg-green-50 transition-colors"
           >
-            <Download className="w-4 h-4" />
-            Exportar
+            <Phone className="w-4 h-4" />
+            Iniciar Sessão
           </button>
-          <button 
-            onClick={() => handleNewMessage()}
+          <button
+            onClick={handleSendMessage}
             className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             <Send className="w-4 h-4" />
-            Nova Mensagem
+            Enviar Mensagem
+          </button>
+          <button
+            onClick={handleSendImage}
+            className="flex items-center gap-2 px-4 py-2 border border-blue-400 text-blue-700 rounded-lg hover:bg-blue-50 transition-colors"
+          >
+            <Upload className="w-4 h-4" />
+            Enviar Imagem
+          </button>
+          <button
+            onClick={handleSendFile}
+            className="flex items-center gap-2 px-4 py-2 border border-gray-400 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <Upload className="w-4 h-4" />
+            Enviar Arquivo
+          </button>
+          <button
+            onClick={handleSendSticker}
+            className="flex items-center gap-2 px-4 py-2 border border-yellow-400 text-yellow-700 rounded-lg hover:bg-yellow-50 transition-colors"
+          >
+            <Zap className="w-4 h-4" />
+            Enviar Sticker
+          </button>
+          <button
+            onClick={handleSendContact}
+            className="flex items-center gap-2 px-4 py-2 border border-purple-400 text-purple-700 rounded-lg hover:bg-purple-50 transition-colors"
+          >
+            <Users className="w-4 h-4" />
+            Enviar Contato
+          </button>
+          <button
+            onClick={handleSendLocation}
+            className="flex items-center gap-2 px-4 py-2 border border-orange-400 text-orange-700 rounded-lg hover:bg-orange-50 transition-colors"
+          >
+            <MapPin className="w-4 h-4" />
+            Enviar Localização
           </button>
         </div>
       </div>
