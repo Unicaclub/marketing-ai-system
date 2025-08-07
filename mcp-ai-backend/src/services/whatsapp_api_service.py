@@ -5,8 +5,22 @@ WHATSAPI_BASE_URL = "https://whatsapi-production-5412.up.railway.app/wpp"
 def start_session(phone):
     url = f"{WHATSAPI_BASE_URL}/session/start"
     payload = {"phone": phone}
-    response = requests.post(url, json=payload)
-    return response.json()
+    try:
+        response = requests.post(url, json=payload)
+        if response.headers.get('Content-Type', '').startswith('application/json'):
+            return response.json()
+        else:
+            return {
+                "error": True,
+                "status_code": response.status_code,
+                "text": response.text,
+                "details": "Resposta do WhatsApi não é JSON."
+            }
+    except Exception as e:
+        return {
+            "error": True,
+            "details": str(e)
+        }
 
 def list_sessions():
     url = f"{WHATSAPI_BASE_URL}/session/list"

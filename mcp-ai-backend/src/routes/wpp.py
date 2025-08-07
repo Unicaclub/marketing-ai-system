@@ -5,8 +5,17 @@ wpp_bp = Blueprint('wpp', __name__)
 
 @wpp_bp.route('/wpp/session/start', methods=['POST'])
 def api_start_session():
-    phone = request.json.get('phone')
-    return jsonify(start_session(phone))
+    try:
+        data = request.get_json()
+        phone = data.get('phone') if data else None
+        if not phone:
+            return jsonify({"error": True, "details": "Campo 'phone' é obrigatório."}), 400
+        result = start_session(phone)
+        if isinstance(result, dict) and result.get("error"):
+            return jsonify(result), 502
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": True, "details": str(e)}), 500
 
 @wpp_bp.route('/wpp/session/list', methods=['GET'])
 def api_list_sessions():
