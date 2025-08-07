@@ -19,7 +19,6 @@ import {
   ChevronRight
 } from 'lucide-react';
 import WhatsAppAutomation from './platforms/WhatsAppAutomation';
-        <Route path="/platforms/WhatsApp/automation" element={<WhatsAppAutomation />} />
 
 const Layout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
