@@ -10,7 +10,9 @@ def api_start_session():
         phone = data.get('phone') if data else None
         if not phone:
             return jsonify({"error": True, "details": "Campo 'phone' é obrigatório."}), 400
-        result = start_session(phone)
+        # Usa o número como session_id
+        session_id = phone
+        result = start_session(session_id)
         if isinstance(result, dict) and result.get("error"):
             return jsonify(result), 502
         return jsonify(result)

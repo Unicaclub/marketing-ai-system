@@ -2,11 +2,10 @@ import requests
 
 WHATSAPI_BASE_URL = "https://whatsapi-production-5412.up.railway.app/wpp"
 
-def start_session(phone):
-    url = f"{WHATSAPI_BASE_URL}/session/start"
-    payload = {"phone": phone}
+def start_session(session_id):
+    url = f"{WHATSAPI_BASE_URL}/api/{session_id}/start-session"
     try:
-        response = requests.post(url, json=payload)
+        response = requests.post(url, json={})
         if response.headers.get('Content-Type', '').startswith('application/json'):
             return response.json()
         else:

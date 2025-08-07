@@ -45,7 +45,7 @@ const WhatsAppAutomation = () => {
       return;
     }
     try {
-      const res = await fetch(`${API_URL}/whatsapp/send`, {
+      const res = await fetch(`${API_URL}/wpp/send-text`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ session: sessionId, phone: destPhone, message })
@@ -63,7 +63,7 @@ const WhatsAppAutomation = () => {
       return;
     }
     try {
-      const res = await fetch(`${API_URL}/whatsapp/send-image`, {
+      const res = await fetch(`${API_URL}/wpp/send-image`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ session: sessionId, phone: destPhone, image: imageUrl, caption: imageCaption })
@@ -81,7 +81,7 @@ const WhatsAppAutomation = () => {
       return;
     }
     try {
-      const res = await fetch(`${API_URL}/whatsapp/send-file`, {
+      const res = await fetch(`${API_URL}/wpp/send-file`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ session: sessionId, phone: destPhone, file: fileUrl, filename: fileName })
@@ -99,7 +99,7 @@ const WhatsAppAutomation = () => {
       return;
     }
     try {
-      const res = await fetch(`${API_URL}/whatsapp/send-sticker`, {
+      const res = await fetch(`${API_URL}/wpp/send-sticker`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ session: sessionId, phone: destPhone, sticker: stickerUrl })
@@ -124,7 +124,7 @@ const WhatsAppAutomation = () => {
       return;
     }
     try {
-      const res = await fetch(`${API_URL}/whatsapp/send-contact`, {
+      const res = await fetch(`${API_URL}/wpp/send-contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ session: sessionId, phone: destPhone, contact })
@@ -142,7 +142,7 @@ const WhatsAppAutomation = () => {
       return;
     }
     try {
-      const res = await fetch(`${API_URL}/whatsapp/send-location`, {
+      const res = await fetch(`${API_URL}/wpp/send-location`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ session: sessionId, phone: destPhone, latitude, longitude, description: locationDesc })
